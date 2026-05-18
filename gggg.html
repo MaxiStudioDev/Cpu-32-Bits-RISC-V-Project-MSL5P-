@@ -1,0 +1,2817 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MaxiStudioPro — Ilyess El Gouchi</title>
+<style>
+  /* ============ RESET & BASE ============ */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  :root {
+    --primary: #00f5ff;
+    --secondary: #7c3aed;
+    --accent: #f59e0b;
+    --green: #22c55e;
+    --dark: #050510;
+    --dark2: #0a0a1a;
+    --dark3: #111128;
+    --text: #e2e8f0;
+    --text-muted: #94a3b8;
+    --card-bg: rgba(255,255,255,0.03);
+    --border: rgba(0,245,255,0.15);
+    --glow: 0 0 30px rgba(0,245,255,0.3);
+    --glow2: 0 0 30px rgba(124,58,237,0.3);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--dark);
+    color: var(--text);
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* ============ CUSTOM CURSOR ============ */
+  .cursor {
+    position: fixed;
+    width: 12px; height: 12px;
+    background: var(--primary);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99999;
+    transition: transform 0.1s;
+    box-shadow: 0 0 15px var(--primary), 0 0 30px var(--primary);
+  }
+  .cursor-ring {
+    position: fixed;
+    width: 40px; height: 40px;
+    border: 1px solid rgba(0,245,255,0.5);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99998;
+    transition: all 0.15s ease;
+  }
+  .cursor.clicking { transform: scale(0.5); }
+  .cursor-ring.clicking { transform: scale(1.5); border-color: var(--primary); }
+
+  /* ============ SCROLLBAR ============ */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--dark2); }
+  ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 2px; }
+
+  /* ============ CANVAS PARTICLES ============ */
+  #particles-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* ============ NAV ============ */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(5,5,16,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    transition: all 0.3s;
+  }
+  nav.scrolled { padding: 0.7rem 2rem; }
+
+  .nav-logo {
+    font-size: 1.3rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .nav-logo-sub {
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    opacity: 0.6;
+    font-weight: 400;
+    -webkit-text-fill-color: var(--text-muted);
+    background: none;
+    -webkit-background-clip: unset;
+    display: block;
+    line-height: 1;
+    margin-top: 2px;
+  }
+
+  .nav-logo-wrap { display: flex; flex-direction: column; }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: color 0.3s;
+    position: relative;
+    font-weight: 500;
+  }
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -4px; left: 0; right: 0;
+    height: 1px;
+    background: var(--primary);
+    transform: scaleX(0);
+    transition: transform 0.3s;
+  }
+  .nav-links a:hover { color: var(--primary); }
+  .nav-links a:hover::after { transform: scaleX(1); }
+
+  /* ============ SECTIONS BASE ============ */
+  section { position: relative; z-index: 1; }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  .section-tag {
+    display: inline-block;
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--primary);
+    background: rgba(0,245,255,0.08);
+    border: 1px solid rgba(0,245,255,0.2);
+    padding: 0.3rem 1rem;
+    border-radius: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+
+  .section-title span {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .section-desc {
+    color: var(--text-muted);
+    max-width: 500px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  /* ============ HERO ============ */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-content { position: relative; z-index: 2; }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(0,245,255,0.06);
+    border: 1px solid rgba(0,245,255,0.2);
+    padding: 0.5rem 1.2rem;
+    border-radius: 2rem;
+    font-size: 0.8rem;
+    color: var(--primary);
+    margin-bottom: 2rem;
+    animation: fadeInDown 0.8s ease;
+  }
+
+  .badge-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #22c55e;
+    animation: pulse-dot 1.5s infinite;
+  }
+
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.5); }
+  }
+
+  .hero-age-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(124,58,237,0.15));
+    border: 1px solid rgba(245,158,11,0.4);
+    padding: 0.4rem 1rem;
+    border-radius: 2rem;
+    font-size: 0.78rem;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+    animation: fadeInDown 0.8s ease 0.15s both;
+    letter-spacing: 0.5px;
+  }
+
+  .hero-name {
+    font-size: clamp(2.8rem, 7vw, 6.5rem);
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+    animation: fadeInUp 0.8s ease 0.2s both;
+  }
+
+  .hero-name .prenom { color: var(--text); }
+  .hero-name .nom {
+    background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200%;
+    animation: gradient-shift 3s ease infinite;
+    display: block;
+  }
+
+  @keyframes gradient-shift {
+    0%, 100% { background-position: 0%; }
+    50% { background-position: 100%; }
+  }
+
+  .hero-studio {
+    font-size: 0.85rem;
+    letter-spacing: 4px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    animation: fadeInUp 0.8s ease 0.35s both;
+    font-weight: 300;
+  }
+  .hero-studio span { color: var(--primary); font-weight: 700; }
+
+  .hero-title {
+    font-size: clamp(0.9rem, 1.8vw, 1.2rem);
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+    animation: fadeInUp 0.8s ease 0.4s both;
+    font-weight: 300;
+    letter-spacing: 1.5px;
+  }
+
+  .hero-title .highlight { color: var(--primary); font-weight: 600; }
+  .hero-title .highlight2 { color: var(--accent); font-weight: 600; }
+  .hero-title .highlight3 { color: #a855f7; font-weight: 600; }
+
+  .typewriter-container {
+    height: 2rem;
+    margin-bottom: 2.5rem;
+    animation: fadeInUp 0.8s ease 0.5s both;
+  }
+
+  #typewriter {
+    font-size: 1rem;
+    color: var(--secondary);
+    font-weight: 500;
+    border-right: 2px solid var(--secondary);
+    padding-right: 3px;
+    animation: blink 0.8s infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { border-color: var(--secondary); }
+    50% { border-color: transparent; }
+  }
+
+  /* ---- CPU Badge spécial ---- */
+  .hero-cpu-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: rgba(0,245,255,0.05);
+    border: 1px solid rgba(0,245,255,0.25);
+    padding: 0.6rem 1.4rem;
+    border-radius: 0.75rem;
+    font-size: 0.82rem;
+    color: var(--text);
+    margin-bottom: 2rem;
+    animation: fadeInUp 0.8s ease 0.55s both;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-cpu-badge::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(0,245,255,0.05), transparent);
+    animation: cpu-scan 2.5s linear infinite;
+  }
+
+  @keyframes cpu-scan {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(100%); }
+  }
+
+  .cpu-icon { font-size: 1.1rem; animation: cpu-spin 4s linear infinite; display: inline-block; }
+  @keyframes cpu-spin {
+    0%, 90% { transform: rotate(0deg); }
+    95% { transform: rotate(180deg); }
+    100% { transform: rotate(180deg); }
+  }
+
+  .hero-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: fadeInUp 0.8s ease 0.65s both;
+  }
+
+  .btn {
+    padding: 0.85rem 2rem;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: none;
+    cursor: none;
+    letter-spacing: 0.5px;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(0,245,255,0.3);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,245,255,0.5); }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--primary);
+    border: 1px solid rgba(0,245,255,0.4);
+  }
+  .btn-secondary:hover { background: rgba(0,245,255,0.08); transform: translateY(-2px); border-color: var(--primary); box-shadow: var(--glow); }
+
+  .hero-scroll {
+    position: absolute;
+    bottom: 2rem; left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    animation: fadeIn 1s ease 1.2s both;
+  }
+
+  .scroll-line {
+    width: 1px; height: 50px;
+    background: linear-gradient(to bottom, var(--primary), transparent);
+    animation: scroll-line 2s ease-in-out infinite;
+  }
+
+  @keyframes scroll-line {
+    0% { transform: scaleY(0); transform-origin: top; }
+    50% { transform: scaleY(1); transform-origin: top; }
+    51% { transform: scaleY(1); transform-origin: bottom; }
+    100% { transform: scaleY(0); transform-origin: bottom; }
+  }
+
+  /* ============ ABOUT ============ */
+  #about { padding: 8rem 0; background: linear-gradient(180deg, var(--dark) 0%, var(--dark2) 100%); }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: center;
+  }
+
+  .about-visual { position: relative; }
+
+  .about-avatar {
+    width: 100%;
+    aspect-ratio: 1;
+    max-width: 380px;
+    margin: 0 auto;
+    position: relative;
+    display: block;
+  }
+
+  .avatar-hexagon {
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, var(--dark3), var(--dark2));
+    border: 1px solid var(--border);
+    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 5rem;
+    position: relative;
+    overflow: hidden;
+    animation: morph 8s ease-in-out infinite;
+    box-shadow: var(--glow);
+  }
+
+  @keyframes morph {
+    0%, 100% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
+    25% { border-radius: 58% 42% 75% 25% / 76% 46% 54% 24%; }
+    50% { border-radius: 50% 50% 33% 67% / 55% 27% 73% 45%; }
+    75% { border-radius: 33% 67% 58% 42% / 63% 68% 32% 37%; }
+  }
+
+  .avatar-ring {
+    position: absolute; inset: -15px;
+    border: 1px solid rgba(0,245,255,0.1);
+    border-radius: inherit;
+    animation: morph 8s ease-in-out infinite reverse;
+  }
+  .avatar-ring2 {
+    position: absolute; inset: -30px;
+    border: 1px solid rgba(124,58,237,0.1);
+    border-radius: inherit;
+    animation: morph 10s ease-in-out infinite;
+  }
+
+  .floating-badge {
+    position: absolute;
+    background: var(--dark3);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 0.6rem 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    box-shadow: var(--glow);
+    animation: float 3s ease-in-out infinite;
+    white-space: nowrap;
+  }
+
+  .floating-badge:nth-child(2) { top: 5%; right: -8%; animation-delay: 0s; }
+  .floating-badge:nth-child(3) { bottom: 15%; left: -8%; animation-delay: 1s; }
+  .floating-badge:nth-child(4) { top: 45%; right: -12%; animation-delay: 2s; }
+  .floating-badge:nth-child(5) { bottom: 40%; left: -10%; animation-delay: 0.5s; }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .about-content h2 {
+    font-size: 2.2rem;
+    font-weight: 900;
+    margin-bottom: 1.5rem;
+    line-height: 1.1;
+  }
+
+  .about-content h2 span {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .about-content p {
+    color: var(--text-muted);
+    line-height: 1.8;
+    margin-bottom: 1rem;
+    font-size: 0.92rem;
+  }
+
+  /* ---- Highlight box CPU ---- */
+  .cpu-highlight-box {
+    background: linear-gradient(135deg, rgba(0,245,255,0.05), rgba(124,58,237,0.05));
+    border: 1px solid rgba(0,245,255,0.2);
+    border-radius: 1rem;
+    padding: 1.25rem 1.5rem;
+    margin: 1.5rem 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cpu-highlight-box::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+  }
+
+  .cpu-highlight-box h4 {
+    color: var(--primary);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .cpu-highlight-box p {
+    margin: 0;
+    font-size: 0.88rem;
+    color: var(--text);
+  }
+
+  .cpu-highlight-box strong { color: var(--accent); }
+
+  .about-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin: 2rem 0;
+  }
+
+  .stat-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    padding: 1.25rem;
+    text-align: center;
+    transition: all 0.3s;
+  }
+  .stat-card:hover { border-color: var(--primary); box-shadow: var(--glow); transform: translateY(-3px); }
+
+  .stat-number {
+    font-size: 2rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: block;
+  }
+
+  .stat-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+
+  /* ============ SKILLS ============ */
+  #skills { padding: 8rem 0; background: var(--dark2); }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .skill-category {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 1.5rem;
+    padding: 2rem;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .skill-category::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    transform: scaleX(0);
+    transition: transform 0.4s;
+  }
+
+  .skill-category:hover::before { transform: scaleX(1); }
+  .skill-category:hover { border-color: var(--primary); transform: translateY(-5px); box-shadow: var(--glow); }
+
+  /* ---- Badge MAÎTRISE ---- */
+  .mastery-badge {
+    position: absolute;
+    top: 1rem; right: 1rem;
+    font-size: 0.6rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 2rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .mastery-master { background: rgba(245,158,11,0.2); color: var(--accent); border: 1px solid rgba(245,158,11,0.4); }
+  .mastery-dev { background: rgba(0,245,255,0.1); color: var(--primary); border: 1px solid rgba(0,245,255,0.3); }
+  .mastery-wip { background: rgba(124,58,237,0.15); color: #a855f7; border: 1px solid rgba(124,58,237,0.35); }
+
+  .skill-cat-icon { font-size: 2.5rem; margin-bottom: 1rem; display: block; }
+  .skill-cat-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 1.5rem; color: var(--primary); }
+
+  .skill-item { margin-bottom: 1rem; }
+
+  .skill-info { display: flex; justify-content: space-between; margin-bottom: 0.4rem; font-size: 0.85rem; }
+  .skill-name { color: var(--text); font-weight: 500; }
+  .skill-pct { color: var(--primary); font-weight: 700; }
+
+  .skill-bar { height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
+
+  .skill-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    width: 0;
+    transition: width 1.5s cubic-bezier(0.4,0,0.2,1);
+    position: relative;
+  }
+
+  .skill-fill::after {
+    content: '';
+    position: absolute;
+    right: 0; top: 50%;
+    transform: translateY(-50%);
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--primary);
+    box-shadow: 0 0 8px var(--primary);
+  }
+
+  /* Couleurs spéciales par skill */
+  .skill-fill.rust { background: linear-gradient(90deg, #f97316, #ef4444); }
+  .skill-fill.rust::after { background: #f97316; box-shadow: 0 0 8px #f97316; }
+  .skill-fill.godot { background: linear-gradient(90deg, #4f86c6, #478cbf); }
+  .skill-fill.godot::after { background: #478cbf; box-shadow: 0 0 8px #478cbf; }
+  .skill-fill.cpu { background: linear-gradient(90deg, var(--accent), #ef4444); }
+  .skill-fill.cpu::after { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+
+  /* ---- Skill note ---- */
+  .skill-note {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    background: rgba(255,255,255,0.03);
+    border-left: 2px solid var(--primary);
+    padding: 0.4rem 0.75rem;
+    border-radius: 0 0.4rem 0.4rem 0;
+    margin-top: 0.4rem;
+    line-height: 1.4;
+  }
+
+  /* CPU WIP Card spéciale */
+  .cpu-wip-card {
+    background: linear-gradient(135deg, rgba(245,158,11,0.04), rgba(124,58,237,0.04));
+    border: 1px solid rgba(245,158,11,0.25) !important;
+  }
+  .cpu-wip-card:hover { border-color: var(--accent) !important; box-shadow: 0 0 30px rgba(245,158,11,0.25) !important; }
+
+  .wip-bar {
+    height: 8px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 0.75rem 0;
+    position: relative;
+  }
+
+  .wip-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--accent), #ef4444, var(--secondary));
+    background-size: 200%;
+    animation: wip-glow 2s linear infinite;
+    position: relative;
+  }
+
+  @keyframes wip-glow {
+    0% { background-position: 0%; }
+    100% { background-position: 200%; }
+  }
+
+  .wip-phases {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.4rem;
+    margin-top: 1rem;
+  }
+
+  .wip-phase {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.3rem;
+    text-align: center;
+    font-size: 0.62rem;
+    color: var(--text-muted);
+    transition: all 0.3s;
+  }
+
+  .wip-phase.done {
+    border-color: rgba(34,197,94,0.4);
+    color: var(--green);
+    background: rgba(34,197,94,0.06);
+  }
+
+  .wip-phase.current {
+    border-color: rgba(245,158,11,0.5);
+    color: var(--accent);
+    background: rgba(245,158,11,0.08);
+    animation: phase-pulse 1.5s infinite;
+  }
+
+  @keyframes phase-pulse {
+    0%, 100% { box-shadow: none; }
+    50% { box-shadow: 0 0 10px rgba(245,158,11,0.3); }
+  }
+
+  /* ============ PROJECTS ============ */
+  #projects { padding: 8rem 0; background: var(--dark); }
+
+  .projects-filter {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 3rem;
+  }
+
+  .filter-btn {
+    padding: 0.5rem 1.2rem;
+    border-radius: 2rem;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    cursor: none;
+    transition: all 0.3s;
+    font-weight: 500;
+  }
+
+  .filter-btn.active, .filter-btn:hover {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: #fff;
+    border-color: transparent;
+    box-shadow: 0 4px 15px rgba(0,245,255,0.3);
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 2rem;
+  }
+
+  .project-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 1.5rem;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+    cursor: none;
+    animation: fadeInUp 0.5s ease both;
+  }
+
+  .project-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-8px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), var(--glow);
+  }
+
+  /* ---- Image Gallery dans card ---- */
+  .project-gallery {
+    position: relative;
+    aspect-ratio: 16/9;
+    overflow: hidden;
+    background: var(--dark3);
+  }
+
+  .gallery-slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    transform: scale(1.05);
+  }
+
+  .gallery-slide.active { opacity: 1; transform: scale(1); }
+
+  .gallery-slide img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .gallery-placeholder {
+    width: 100%; height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, var(--dark3), var(--dark2));
+  }
+
+  .gallery-placeholder .ph-emoji { font-size: 3.5rem; }
+  .gallery-placeholder .ph-label { font-size: 0.7rem; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+
+  .gallery-nav {
+    position: absolute;
+    bottom: 0.75rem; left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.4rem;
+    z-index: 10;
+  }
+
+  .gallery-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    cursor: none;
+    transition: all 0.3s;
+  }
+  .gallery-dot.active {
+    background: var(--primary);
+    width: 18px;
+    border-radius: 3px;
+    box-shadow: 0 0 8px var(--primary);
+  }
+
+  .gallery-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.6);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: white;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: none;
+    z-index: 10;
+    transition: all 0.3s;
+    font-size: 0.9rem;
+    opacity: 0;
+  }
+  .gallery-arrow:hover { background: var(--primary); border-color: var(--primary); }
+  .project-gallery:hover .gallery-arrow { opacity: 1; }
+  .gallery-arrow.prev { left: 0.75rem; }
+  .gallery-arrow.next { right: 0.75rem; }
+
+  .project-badge {
+    position: absolute;
+    top: 0.75rem; left: 0.75rem;
+    background: rgba(0,0,0,0.7);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(10px);
+    border-radius: 0.4rem;
+    padding: 0.25rem 0.6rem;
+    font-size: 0.62rem;
+    color: var(--primary);
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .img-count-badge {
+    position: absolute;
+    top: 0.75rem; right: 0.75rem;
+    background: rgba(0,0,0,0.7);
+    border-radius: 0.4rem;
+    padding: 0.25rem 0.6rem;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .project-info { padding: 1.5rem; }
+
+  .project-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.75rem; }
+
+  .project-tag {
+    font-size: 0.62rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 2rem;
+    border: 1px solid;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  .project-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text); }
+  .project-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.25rem; }
+
+  .project-actions { display: flex; gap: 0.75rem; }
+
+  .btn-card {
+    flex: 1;
+    padding: 0.6rem;
+    border-radius: 0.6rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    cursor: none;
+    transition: all 0.3s;
+    border: 1px solid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+  }
+
+  .btn-card-primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; border-color: transparent; }
+  .btn-card-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(0,245,255,0.3); }
+  .btn-card-secondary { background: transparent; color: var(--text-muted); border-color: var(--border); }
+  .btn-card-secondary:hover { border-color: var(--primary); color: var(--primary); }
+
+  /* ============ PROJECT PAGE (fullscreen) ============ */
+  #projectPage {
+    position: fixed;
+    inset: 0;
+    z-index: 8000;
+    background: var(--dark);
+    overflow-y: auto;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s;
+  }
+
+  #projectPage.open { opacity: 1; pointer-events: all; }
+
+  .proj-page-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(5,5,16,0.9);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .proj-page-back {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    cursor: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .proj-page-back:hover { border-color: var(--primary); color: var(--primary); }
+
+  .proj-page-title { font-size: 1.1rem; font-weight: 700; }
+  .proj-page-badge { margin-left: auto; }
+
+  .proj-page-body {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 3rem 2rem 6rem;
+  }
+
+  /* ---- Hero image de la page projet ---- */
+  .proj-hero-img {
+    width: 100%;
+    aspect-ratio: 16/8;
+    border-radius: 1.5rem;
+    overflow: hidden;
+    margin-bottom: 3rem;
+    background: var(--dark3);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 6rem;
+    position: relative;
+  }
+
+  .proj-hero-img img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* ---- Galerie image interactive dans page projet ---- */
+  .proj-section { margin-bottom: 3rem; }
+
+  .proj-section-title {
+    font-size: 1.3rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text);
+  }
+
+  .proj-section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, var(--border), transparent);
+  }
+
+  .proj-section-title span { color: var(--primary); }
+
+  .proj-text {
+    color: var(--text-muted);
+    line-height: 1.9;
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+  }
+
+  .proj-text strong { color: var(--text); font-weight: 600; }
+  .proj-text em { color: var(--primary); font-style: normal; font-weight: 600; }
+
+  /* ---- Editor Content Styles ---- */
+  .proj-editor-content {
+    color: var(--text-muted);
+    line-height: 1.85;
+    font-size: 0.95rem;
+  }
+
+  .proj-editor-content h1 {
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: var(--text);
+    margin: 2.5rem 0 1rem;
+    line-height: 1.2;
+    position: relative;
+    padding-bottom: 0.5rem;
+  }
+
+  .proj-editor-content h1::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 50px; height: 3px;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    border-radius: 2px;
+  }
+
+  .proj-editor-content h2 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 2rem 0 0.75rem;
+  }
+
+  .proj-editor-content h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin: 1.5rem 0 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.85rem;
+  }
+
+  .proj-editor-content p { margin-bottom: 1rem; }
+
+  .proj-editor-content strong { color: var(--text); font-weight: 700; }
+
+  .proj-editor-content em { color: var(--primary); font-style: normal; font-weight: 600; }
+
+  .proj-editor-content hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, var(--primary), var(--secondary), transparent);
+    margin: 2rem 0;
+    opacity: 0.3;
+  }
+
+  .proj-editor-content ul, .proj-editor-content ol {
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .proj-editor-content li { margin-bottom: 0.4rem; }
+
+  .proj-editor-content code {
+    background: rgba(0,245,255,0.06);
+    border: 1px solid rgba(0,245,255,0.15);
+    padding: 0.15rem 0.5rem;
+    border-radius: 0.3rem;
+    font-size: 0.88em;
+    color: var(--primary);
+    font-family: 'Courier New', monospace;
+  }
+
+  .proj-editor-content pre {
+    background: #0a0a16;
+    border: 1px solid rgba(0,245,255,0.1);
+    border-radius: 0.75rem;
+    padding: 1.25rem 1.5rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.82rem;
+    color: #a5f3fc;
+    overflow-x: auto;
+    margin: 1rem 0;
+    line-height: 1.6;
+  }
+
+  .proj-editor-content blockquote {
+    background: rgba(0,245,255,0.04);
+    border-left: 3px solid var(--primary);
+    padding: 0.75rem 1.25rem;
+    border-radius: 0 0.5rem 0.5rem 0;
+    margin: 1rem 0;
+    color: var(--text);
+  }
+
+  /* ---- Image Gallery interactive dans page ---- */
+  .proj-img-gallery {
+    display: grid;
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+  }
+
+  .proj-img-gallery.cols-1 { grid-template-columns: 1fr; }
+  .proj-img-gallery.cols-2 { grid-template-columns: 1fr 1fr; }
+  .proj-img-gallery.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  .proj-img-item {
+    border-radius: 1rem;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    cursor: none;
+    transition: all 0.3s;
+    position: relative;
+    aspect-ratio: 16/9;
+    background: var(--dark3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .proj-img-item:hover {
+    border-color: var(--primary);
+    transform: scale(1.02);
+    box-shadow: var(--glow);
+  }
+
+  .proj-img-item img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .proj-img-item .ph-emoji { font-size: 2.5rem; }
+  .proj-img-item .ph-label { font-size: 0.7rem; color: var(--text-muted); letter-spacing: 1px; }
+
+  .proj-img-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    font-size: 2rem;
+    opacity: 0;
+  }
+  .proj-img-item:hover .proj-img-overlay { background: rgba(0,245,255,0.1); opacity: 1; }
+
+  /* ---- Inline highlight box ---- */
+  .proj-highlight {
+    background: linear-gradient(135deg, rgba(0,245,255,0.04), rgba(124,58,237,0.04));
+    border: 1px solid rgba(0,245,255,0.15);
+    border-left: 3px solid var(--primary);
+    border-radius: 0 0.75rem 0.75rem 0;
+    padding: 1rem 1.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .proj-highlight.accent {
+    border-left-color: var(--accent);
+    background: linear-gradient(135deg, rgba(245,158,11,0.04), rgba(124,58,237,0.04));
+  }
+
+  .proj-highlight p {
+    color: var(--text);
+    font-size: 0.9rem;
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  /* ---- Code block ---- */
+  .proj-code {
+    background: #0d0d1a;
+    border: 1px solid rgba(0,245,255,0.1);
+    border-radius: 0.75rem;
+    padding: 1.25rem 1.5rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.82rem;
+    color: #a5f3fc;
+    margin: 1rem 0;
+    overflow-x: auto;
+    white-space: pre;
+    line-height: 1.6;
+  }
+
+  .proj-code .kw { color: #818cf8; }
+  .proj-code .fn { color: #34d399; }
+  .proj-code .str { color: #fbbf24; }
+  .proj-code .cm { color: #4b5563; }
+
+  /* ---- Tag list dans page projet ---- */
+  .proj-tags-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1rem 0;
+  }
+
+  .proj-tag-big {
+    padding: 0.35rem 0.9rem;
+    border-radius: 2rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border: 1px solid;
+  }
+
+  /* ============ LIGHTBOX ============ */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 20000;
+    background: rgba(0,0,0,0.96);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    backdrop-filter: blur(15px);
+  }
+
+  .lightbox.open { opacity: 1; pointer-events: all; }
+
+  .lb-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    max-width: 90vw;
+  }
+
+  .lb-emoji { font-size: 12rem; transform: scale(0.9); transition: transform 0.3s; }
+  .lightbox.open .lb-emoji { transform: scale(1); }
+
+  .lb-img {
+    max-width: 90vw;
+    max-height: 80vh;
+    border-radius: 0.75rem;
+    object-fit: contain;
+    transform: scale(0.9);
+    transition: transform 0.3s;
+    box-shadow: 0 0 80px rgba(0,0,0,0.8);
+    display: none;
+  }
+  .lightbox.open .lb-img { transform: scale(1); }
+
+  .lb-caption {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-align: center;
+  }
+
+  .lightbox-close {
+    position: absolute;
+    top: 1.5rem; right: 1.5rem;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: none;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .lightbox-close:hover { background: var(--primary); }
+
+  .lightbox-nav {
+    position: absolute;
+    top: 50%; transform: translateY(-50%);
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    width: 50px; height: 50px;
+    border-radius: 50%;
+    font-size: 1.4rem;
+    cursor: none;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .lightbox-nav:hover { background: var(--primary); transform: translateY(-50%) scale(1.1); }
+  .lightbox-prev { left: 2rem; }
+  .lightbox-next { right: 2rem; }
+
+  .lightbox-counter {
+    position: absolute;
+    bottom: 1.5rem; left: 50%;
+    transform: translateX(-50%);
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    background: rgba(0,0,0,0.5);
+    padding: 0.4rem 1rem;
+    border-radius: 2rem;
+  }
+
+  /* ============ DOWNLOADS ============ */
+  #downloads { padding: 8rem 0; background: var(--dark2); }
+
+  .downloads-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 4rem;
+  }
+
+  .download-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 1.5rem;
+    padding: 1.75rem;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .download-card:hover { border-color: var(--primary); transform: translateY(-4px); box-shadow: var(--glow); }
+
+  .dl-logo {
+    width: 64px; height: 64px;
+    border-radius: 1rem;
+    background: linear-gradient(135deg, var(--dark3), var(--dark));
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    flex-shrink: 0;
+  }
+
+  .dl-info { flex: 1; }
+  .dl-title { font-size: 1rem; font-weight: 700; margin-bottom: 0.25rem; }
+  .dl-desc { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem; line-height: 1.4; }
+
+  .dl-meta { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+  .dl-chip {
+    font-size: 0.62rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: 2rem;
+    background: rgba(0,245,255,0.08);
+    border: 1px solid rgba(0,245,255,0.2);
+    color: var(--primary);
+    font-weight: 700;
+  }
+
+  .dl-btn {
+    width: 44px; height: 44px;
+    border-radius: 0.75rem;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    cursor: none;
+    transition: all 0.3s;
+    text-decoration: none;
+    color: white;
+    flex-shrink: 0;
+    box-shadow: 0 4px 15px rgba(0,245,255,0.3);
+  }
+  .dl-btn:hover { transform: scale(1.1) rotate(5deg); box-shadow: 0 8px 25px rgba(0,245,255,0.5); }
+
+  /* ============ TECH MARQUEE ============ */
+  .tech-marquee {
+    overflow: hidden;
+    margin: 2rem 0;
+    padding: 1rem 0;
+    position: relative;
+  }
+  .tech-marquee::before, .tech-marquee::after {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 100px;
+    z-index: 2;
+  }
+  .tech-marquee::before { left: 0; background: linear-gradient(to right, var(--dark2), transparent); }
+  .tech-marquee::after { right: 0; background: linear-gradient(to left, var(--dark2), transparent); }
+
+  .marquee-track {
+    display: flex;
+    gap: 1rem;
+    animation: marquee 25s linear infinite;
+    width: max-content;
+  }
+  .marquee-track:hover { animation-play-state: paused; }
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  .tech-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 2rem;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    transition: all 0.3s;
+    font-weight: 500;
+  }
+  .tech-pill:hover { border-color: var(--primary); color: var(--primary); box-shadow: var(--glow); }
+
+  /* ============ CONTACT ============ */
+  #contact { padding: 8rem 0; background: var(--dark); text-align: center; }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    max-width: 800px;
+    margin: 3rem auto 0;
+  }
+
+  .contact-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    text-decoration: none;
+    color: var(--text);
+    transition: all 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .contact-card:hover { border-color: var(--primary); transform: translateY(-4px); box-shadow: var(--glow); color: var(--primary); }
+  .contact-icon { font-size: 2rem; }
+  .contact-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); }
+  .contact-value { font-size: 0.9rem; font-weight: 600; }
+
+  /* ============ FOOTER ============ */
+  footer {
+    background: var(--dark2);
+    border-top: 1px solid var(--border);
+    padding: 2rem;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ============ ANIMATIONS ============ */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  .glow-line {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--primary), var(--secondary), transparent);
+    opacity: 0.5;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 768px) {
+    .about-grid { grid-template-columns: 1fr; gap: 3rem; }
+    .nav-links { display: none; }
+    .hero-buttons { flex-direction: column; align-items: center; }
+    .floating-badge { display: none; }
+    .about-stats { grid-template-columns: repeat(2, 1fr); }
+    .wip-phases { grid-template-columns: repeat(2, 1fr); }
+    .proj-img-gallery.cols-3 { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- Particles -->
+<canvas id="particles-canvas"></canvas>
+
+<!-- ============ LIGHTBOX ============ -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lbClose">✕</button>
+  <button class="lightbox-nav lightbox-prev" id="lbPrev">‹</button>
+  <div class="lb-content">
+    <div class="lb-emoji" id="lbEmoji"></div>
+    <img class="lb-img" id="lbImg" src="" alt="">
+    <div class="lb-caption" id="lbCaption"></div>
+  </div>
+  <button class="lightbox-nav lightbox-next" id="lbNext">›</button>
+  <div class="lightbox-counter" id="lbCounter">1 / 1</div>
+</div>
+
+<!-- ============ PROJECT PAGE ============ -->
+<div id="projectPage">
+  <div class="proj-page-header">
+    <button class="proj-page-back" id="projPageBack">← Retour</button>
+    <div class="proj-page-title" id="projPageTitle"></div>
+    <div class="proj-page-badge section-tag" id="projPageBadge"></div>
+  </div>
+  <div class="proj-page-body" id="projPageBody">
+    <!-- Contenu injecté dynamiquement -->
+  </div>
+</div>
+
+<!-- ============ NAV ============ -->
+<nav id="mainNav">
+  <div class="nav-logo-wrap">
+    <div class="nav-logo">⬡ MaxiStudioPro</div>
+    <span class="nav-logo-sub">by Ilyess El Gouchi</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#about">À Propos</a></li>
+    <li><a href="#skills">Compétences</a></li>
+    <li><a href="#projects">Projets</a></li>
+    <li><a href="#downloads">Télécharger</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- ============ HERO ============ -->
+<section id="hero">
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      Disponible pour collaboration &amp; projets
+    </div>
+
+    <div class="hero-age-badge">
+      ⚡ 13 ans · Développeur &amp; Ingénieur Hardware Indépendant
+    </div>
+
+    <div class="hero-name">
+      <div class="prenom">Ilyess</div>
+      <div class="nom">El Gouchi</div>
+    </div>
+
+    <div class="hero-studio">
+      Fondateur de <span>MaxiStudioPro</span>
+    </div>
+
+    <div class="hero-title">
+      <span class="highlight">Hardware</span> &nbsp;·&nbsp;
+      <span class="highlight2">Game Dev</span> &nbsp;·&nbsp;
+      <span class="highlight3">Systèmes embarqués</span> &nbsp;·&nbsp;
+      <span class="highlight">Rust</span>
+    </div>
+
+    <div class="typewriter-container">
+      <span id="typewriter"></span>
+    </div>
+
+    <div class="hero-cpu-badge">
+      <span class="cpu-icon">🧠</span>
+      <span>Projet en cours : <strong style="color:var(--accent)">Processeur 32-bits custom</strong> — conçu de zéro</span>
+    </div>
+
+    <div class="hero-buttons">
+      <a href="#projects" class="btn btn-primary">🚀 Voir mes projets</a>
+      <a href="#downloads" class="btn btn-secondary">⬇ Télécharger mes créations</a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<div class="glow-line"></div>
+
+<!-- ============ ABOUT ============ -->
+<section id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-visual">
+        <div class="about-avatar">
+          <div class="avatar-hexagon">
+            🧑‍💻
+            <div class="avatar-ring"></div>
+            <div class="avatar-ring2"></div>
+          </div>
+        </div>
+        <div class="floating-badge">
+          <span>🦀</span><span>Rust Expert</span>
+        </div>
+        <div class="floating-badge">
+          <span>🎮</span><span>Godot 100%</span>
+        </div>
+        <div class="floating-badge">
+          <span>🧠</span><span>CPU 32-bit WIP</span>
+        </div>
+        <div class="floating-badge">
+          <span>⚡</span><span>13 ans</span>
+        </div>
+      </div>
+
+      <div class="about-content reveal">
+        <div class="section-tag">Qui suis-je ?</div>
+        <h2><span>Ilyess</span> El Gouchi</h2>
+        <p>
+          À <strong style="color:var(--accent)">13 ans</strong>, je suis déjà plongé dans les profondeurs du développement software,
+          du hardware et de la création de jeux. Fondateur de <strong style="color:var(--primary)">MaxiStudioPro</strong>,
+          je construis tout de zéro avec mes propres solutions.
+        </p>
+        <p>
+          Ma philosophie : <strong style="color:var(--text)">ne pas copier, créer</strong>. Quand je rencontre un problème,
+          je cherche ma propre solution depuis ma tête avant de regarder ailleurs.
+          C'est comme ça que j'apprends vraiment.
+        </p>
+
+        <div class="cpu-highlight-box">
+          <h4>🧠 Projet Flagship — En cours</h4>
+          <p>
+            Je conçois un <strong>processeur 32-bits de A à Z</strong> — architecture, jeu d'instructions,
+            ALU, registres, pipeline — uniquement basé sur mes compétences
+            et ma créativité. <strong>Zéro copie, 100% original.</strong>
+          </p>
+        </div>
+
+        <div class="about-stats">
+          <div class="stat-card">
+            <span class="stat-number" data-target="1">0</span>
+            <span class="stat-label">Projets</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number" data-target="13">0</span>
+            <span class="stat-label">Ans</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-number" data-target="5">0</span>
+            <span class="stat-label">Technos maîtrisées</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="glow-line"></div>
+
+<!-- ============ SKILLS ============ -->
+<section id="skills">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-tag">Expertise</div>
+      <h2 class="section-title">Mes <span>Compétences</span></h2>
+      <p class="section-desc">Hardware, Software, Game Dev — tout en partant de zéro avec ma propre tête.</p>
+    </div>
+
+    <div class="skills-grid">
+
+      <!-- RUST -->
+      <div class="skill-category reveal">
+        <span class="mastery-badge mastery-master">Maîtrisé</span>
+        <span class="skill-cat-icon">🦀</span>
+        <div class="skill-cat-title">Rust</div>
+        <div class="skill-item">
+          <div class="skill-info">
+            <span class="skill-name">Rust (général)</span>
+            <span class="skill-pct" style="color:#f97316">90%</span>
+          </div>
+          <div class="skill-bar"><div class="skill-fill rust" data-width="90"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-info"><span class="skill-name">Ownership / Borrowing</span><span class="skill-pct" style="color:#f97316">92%</span></div>
+          <div class="skill-bar"><div class="skill-fill rust" data-width="92"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-info"><span class="skill-name">Systèmes bas niveau</span><span class="skill-pct" style="color:#f97316">85%</span></div>
+          <div class="skill-bar"><div class="skill-fill rust" data-width="85"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-info"><span class="skill-name">Cargo / Ecosystème</span><span class="skill-pct" style="color:#f97316">88%</span></div>
+          <div class="skill-bar"><div class="skill-fill rust" data-width="88"></div></div>
+        </div>
+        <div class="skill-note">
+          🦀 Rust est mon langage principal. Je l'utilise pour tout ce qui touche aux systèmes,
+          au bas-niveau et aux performances critiques.
+        </div>
+      </div>
+
+      <!-- GODOT -->
+      <div class="skill-category reveal">
+        <span class="mastery-badge mastery-master">Maîtrisé</span>
+        <span class="skill-cat-icon">🎮</span>
+        <div class="skill-cat-title">Godot Engine + GDScript</div>
+        <div class="skill-item">
+          <div class="skill-info"><span class="skill-name">Godot Engine</span><span class="skill-pct" style="color:#478cbf">100%</span></div>
+          <div class="skill-bar"><div class="skill-fill godot" data-width="100"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-info"><span class="skill-name">GDScript</span><span class="skill-pct" style="color:#478cbf">100%</span></div>
+          <div class="skill-bar"><div class="skill-fill godot" data-width="100"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-info"><span class="skill-name">Game Design</span><span class="skill-pct" style="color:#478cbf">85%</span></div>
+          <div class="skill-bar"><div class="skill-fill godot" data-width="85"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-info"><span class="skill-name">Shaders / VFX</span><span class="skill-pct" style="color:#478cbf">75%</span></div>
+          <div class="skill-bar"><div class="skill-fill godot" data-width="75"></div></div>
+        </div>
+        <div class="skill-note">
+          🎮 Godot est mon moteur de jeux. J'ai créé plusieurs jeux complets avec GDScript —
+          ma maîtrise est totale sur cet environnement.
+        </div>
+      </div>
+
+      <!-- C++ -->
+      <div class="skill-category reveal">
+        <span class="mastery-badge mastery-dev">Remplacer Par Rust</span>
+        <span class="skill-cat-icon">⚙️</span>
+        <div class="skill-cat-title">C++</div>
+        <div class="skill-item">
+          <div class="skill-info"><span class="skill-name">C++ (général)</span><span class="skill-pct">20%</span></div>
+          <div class="skill-bar"><div class="skill-fill" data-width="20"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-info"><span class="skill-name">Syntaxe de base</span><span class="skill-pct">35%</span></div>
+          <div class="skill-bar"><div class="skill-fill" data-width="35"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-info"><span class="skill-name">Pointeurs / Mémoire</span><span class="skill-pct">25%</span></div>
+          <div class="skill-bar"><div class="skill-fill" data-width="25"></div></div>
+        </div>
+        <div class="skill-note">
+          ⚙️ En cours d'apprentissage. Mes bases en Rust m'aident énormément à comprendre
+          les concepts bas-niveau de C++. En progression active.
+        </div>
+      </div>
+
+      <!-- CPU 32-bit — WIP SPECIAL -->
+      <div class="skill-category cpu-wip-card reveal">
+        <span class="mastery-badge mastery-wip">🔨 En construction</span>
+        <span class="skill-cat-icon">🧠</span>
+        <div class="skill-cat-title">Processeur 32-bits Custom</div>
+        <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1rem;line-height:1.6;">
+          Conception d'un processeur 32-bits de <strong style="color:var(--accent)">A à Z</strong>,
+          basé uniquement sur mes compétences personnelles.
+          Aucune copie d'architectures existantes. <strong style="color:var(--text)">100% original.</strong>
+        </p>
+
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:0.4rem;display:flex;justify-content:space-between;">
+          <span>Avancement global</span>
+          <span style="color:var(--accent);font-weight:700;">En cours...</span>
+        </div>
+        <div class="wip-bar">
+          <div class="wip-fill" style="width: 30%"></div>
+        </div>
+
+        <div class="wip-phases">
+          <div class="wip-phase done">✓<br>Architecture</div>
+          <div class="wip-phase done">✓<br>ALU</div>
+          <div class="wip-phase current">⚡<br>Mémoire</div>
+          <div class="wip-phase current">⚡<br>ISA Design</div>
+        </div>
+
+        <div class="skill-note" style="margin-top:1rem;border-left-color:var(--accent);">
+          🎯 Objectif : puce fonctionnelle, fabrication custom, zéro ressource externe à ma tête.
+        </div>
+      </div>
+
+      <!-- Hardware -->
+      <div class="skill-category reveal">
+        <span class="mastery-badge mastery-dev">En développement</span>
+        <span class="skill-cat-icon">🔌</span>
+        <div class="skill-cat-title">Hardware &amp; Électronique</div>
+        <div class="skill-item">
+          <div class="skill-info"><span class="skill-name">Conception circuits</span><span class="skill-pct">60%</span></div>
+          <div class="skill-bar"><div class="skill-fill" data-width="60"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-info"><span class="skill-name">Logique numérique</span><span class="skill-pct">70%</span></div>
+          <div class="skill-bar"><div class="skill-fill" data-width="70"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-info"><span class="skill-name">Architecture CPU</span><span class="skill-pct">55%</span></div>
+          <div class="skill-bar"><div class="skill-fill cpu" data-width="55"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-info"><span class="skill-name">Prototypage</span><span class="skill-pct">65%</span></div>
+          <div class="skill-bar"><div class="skill-fill" data-width="65"></div></div>
+        </div>
+      </div>
+
+      <!-- Soft skills -->
+      <div class="skill-category reveal">
+        <span class="mastery-badge mastery-master">Naturel</span>
+        <span class="skill-cat-icon">🧩</span>
+        <div class="skill-cat-title">Compétences Globales</div>
+        <div class="skill-item">
+          <div class="skill-info"><span class="skill-name">Pensée de 0 (from scratch)</span><span class="skill-pct">99%</span></div>
+          <div class="skill-bar"><div class="skill-fill" data-width="99"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-info"><span class="skill-name">Résolution créative</span><span class="skill-pct">95%</span></div>
+          <div class="skill-bar"><div class="skill-fill" data-width="95"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-info"><span class="skill-name">Apprentissage autonome</span><span class="skill-pct">98%</span></div>
+          <div class="skill-bar"><div class="skill-fill" data-width="98"></div></div>
+        </div>
+        <div class="skill-item">
+          <div class="skill-info"><span class="skill-name">Persévérance</span><span class="skill-pct">100%</span></div>
+          <div class="skill-bar"><div class="skill-fill" data-width="100"></div></div>
+        </div>
+        <div class="skill-note">
+          💡 À 13 ans, tout autodidacte. Ma plus grande force : inventer mes solutions plutôt que les chercher.
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="glow-line"></div>
+
+<!-- ============ PROJECTS ============ -->
+<section id="projects">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-tag">Réalisations</div>
+      <h2 class="section-title">Mes <span>Projets</span></h2>
+      <p class="section-desc">Clique sur un projet pour voir la page complète avec toutes les explications et images.</p>
+    </div>
+
+    <div class="projects-filter reveal">
+      <button class="filter-btn active" data-filter="all">Tous</button>
+      <button class="filter-btn" data-filter="hardware">🧠 Hardware / CPU</button>
+      <button class="filter-btn" data-filter="jeux">🎮 Jeux Vidéo</button>
+      <button class="filter-btn" data-filter="software">💻 Software</button>
+      <button class="filter-btn" data-filter="rust">🦀 Rust</button>
+    </div>
+
+    <div class="projects-grid" id="projectsGrid"></div>
+  </div>
+</section>
+
+<div class="glow-line"></div>
+
+<!-- ============ DOWNLOADS ============ -->
+<section id="downloads">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-tag">Ressources</div>
+      <h2 class="section-title">Télécharger mes <span>Créations</span></h2>
+      <p class="section-desc">Mes logiciels, jeux et projets disponibles au téléchargement.</p>
+    </div>
+
+    <div class="downloads-grid reveal" id="downloadsGrid"></div>
+
+    <div class="section-header reveal" style="margin-top:3rem;margin-bottom:1.5rem;">
+      <div class="section-tag">Stack Technologique</div>
+    </div>
+    <div class="tech-marquee reveal">
+      <div class="marquee-track" id="marqueeTrack"></div>
+    </div>
+  </div>
+</section>
+
+<div class="glow-line"></div>
+
+<!-- ============ CONTACT ============ -->
+<section id="contact">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-tag">Me contacter</div>
+      <h2 class="section-title">Travaillons <span>Ensemble</span></h2>
+      <p class="section-desc">Un projet, une idée, une collaboration ? Je suis là.</p>
+    </div>
+    <div class="contact-grid reveal" id="contactGrid"></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>
+    Fait avec <span style="color:var(--primary)">⬡</span> par
+    <strong style="color:var(--text)">Ilyess El Gouchi</strong>
+    &nbsp;·&nbsp; <span style="color:var(--primary)">MaxiStudioPro</span>
+    &nbsp;·&nbsp; 2025
+    &nbsp;·&nbsp; <span style="color:var(--accent)">13 ans · Hardware × Software × Passion</span>
+  </p>
+</footer>
+
+<script>
+// ============================================================
+// DATA — PROJETS (avec ton texte complet pour le CPU)
+// ============================================================
+const PROJECTS = [
+  {
+    id: 1,
+    title: "Processeur 32-bits Custom",
+    category: "hardware",
+    badge: "🧠 Hardware",
+    badgeColor: "var(--accent)",
+    tags: [
+      { label: "Architecture CPU", color: "#f59e0b" },
+      { label: "Logique numérique", color: "#ef4444" },
+      { label: "Rust", color: "#f97316" },
+      { label: "From Scratch", color: "#7c3aed" }
+    ],
+    desc: "Conception d'un processeur 32-bits de A à Z. Architecture, jeu d'instructions, ALU, tout créé depuis ma tête. Aucune copie.",
+    heroEmoji: "🧠",
+    cardImages: [
+      { emoji: "🧠", label: "Architecture CPU" },
+      { emoji: "📐", label: "ISA Design" },
+      { emoji: "⚡", label: "Logique ALU" },
+    ],
+    links: [
+      { label: "GitHub", icon: "📁", href: "#" }
+    ],
+    // ══════════════════════════════════════════════════════════════
+    // TON TEXTE COMPLET — Ce qui s'affiche dans la page projet
+    // ══════════════════════════════════════════════════════════════
+    editorContent: `
+<h1>🎯 Le Projet</h1>
+<p>Mon but est de créer un CPU 32 bits entièrement fait par moi.<br>Je ne copie personne, je crée tout avec mes propres idées et ma logique.</p>
+<p>Depuis longtemps, je m'intéresse au fonctionnement réel des ordinateurs et à l'électronique logique.<br>Au lieu de juste utiliser des programmes, j'aime comprendre comment une machine fonctionne à l'intérieur.</p>
+<hr>
+
+<h1>⚡ ALU — Le commencement</h1>
+<p>J'ai commencé par l'ALU (<em>Arithmetic Logic Unit</em>), parce que c'était déjà un domaine que je maîtrisais bien.</p>
+<p>Vers mes 12 ans, j'avais déjà créé une calculatrice 8 bits entièrement sur Minecraft, construite de zéro uniquement avec de la logique Redstone et des <strong>FULL ADDER</strong>.<br>J'avais développé ce projet en environ 3 jours juste par passion.</p>
+<hr>
+
+<h1>🧠 Réflexion et conception</h1>
+<p>Au début, je faisais énormément de schémas sur papier pendant les temps morts en cours.</p>
+<p>Je réfléchissais directement à la logique des additions binaires :</p>
+<ul>
+  <li><code>1 + 1 = 10</code></li>
+  <li><code>1 + 0 = 1</code></li>
+</ul>
+<p>Je me suis donc dit que quand les deux entrées sont à <code>1</code>, une retenue devait être créée.</p>
+<p>J'ai alors utilisé une porte logique <strong>AND</strong> pour gérer cette retenue :</p>
+<ul>
+  <li><code>1 AND 1 = 1</code></li>
+  <li>toutes les autres combinaisons donnent <code>0</code></li>
+</ul>
+<p>Premier objectif validé ✅</p>
+<p>Ensuite, j'ai commencé à imaginer plusieurs versions de mon ADDER directement sur papier.<br>Je faisais énormément de tests théoriques avant même de construire les circuits.</p>
+<p>Mais un problème est rapidement apparu :</p>
+<p>beaucoup de mes concepts fonctionnaient sur papier, mais ne convenaient pas aux systèmes industriels ou aux logiciels de simulation utilisant des portes logiques "propres".</p>
+<p>Du coup, j'ai décidé d'adapter toute mon ALU à une architecture plus stable et plus réaliste.</p>
+<hr>
+
+<h1>🔧 Ajout de sécurités</h1>
+<p>En travaillant sur mon architecture, j'ai aussi ajouté plusieurs sécurités logiques.</p>
+<p>Le but était d'éviter que certaines parties du CPU exécutent des calculs ou changent d'état sans qu'une instruction le demande réellement.</p>
+<hr>
+
+<h1>🚀 Le FULL ADDER</h1>
+<p>Après ça, je suis passé au <strong>FULL ADDER</strong>.</p>
+<p>Le but était maintenant de gérer :</p>
+<ul>
+  <li>les deux bits d'entrée ;</li>
+  <li>mais aussi la retenue provenant de l'addition précédente.</li>
+</ul>
+<p>C'est ce qui permet ensuite de relier plusieurs additions ensemble pour construire une vraie architecture capable de gérer plusieurs bits.</p>
+<hr>
+
+<h1>💀 Le SUB — Le vrai début des problèmes</h1>
+<p>J'étais super content de mon FULL ADDER.</p>
+<p>Mais ensuite je suis passé au <strong>SUB</strong>… et c'est là que les vrais problèmes ont commencé.</p>
+<p>J'avais deux choix :</p>
+
+<h3>Solution 1</h3>
+<p>Utiliser la technique <code>A + (!B)</code> utilisée dans beaucoup de vrais processeurs.<br>Mais au début, je ne la considérais pas comme totalement fiable.</p>
+
+<h3>Solution 2</h3>
+<p>Créer tout le système de soustraction moi-même de zéro.</p>
+<p>Et évidemment… c'est cette solution que j'ai choisie 😭</p>
+<hr>
+
+<h1>⚠️ Le FULL SUB — L'enfer</h1>
+<p>Au début, mon SUB fonctionnait parfaitement.</p>
+<p>Le vrai problème est arrivé quand j'ai commencé le <strong>FULL SUB</strong>, donc la gestion des retenues, des dettes et des emprunts binaires.</p>
+<p>Là c'était un enfer.</p>
+<p>J'ai essayé énormément de techniques :</p>
+<ul>
+  <li>sécurités logiques ;</li>
+  <li>protections ;</li>
+  <li>nouvelles structures ;</li>
+  <li>systèmes de contrôle.</li>
+</ul>
+<hr>
+
+<h1>🐛 Les deux bugs qui m'ont détruit</h1>
+<p>Après énormément de travail, je termine enfin mon FULL SUB.</p>
+<p>Je teste tout. Tout fonctionne.</p>
+<p>J'étais littéralement à deux doigts de crier de joie.</p>
+<p>Puis la réalité me rattrape 💀</p>
+
+<h3>Premier bug</h3>
+<p>Dans certains cas négatifs très précis : <code>0 - 1 + 0 - 0</code> le système me donnait <code>-3</code> en décimal. Ce qui était totalement faux.</p>
+
+<h3>Deuxième bug</h3>
+<p>La gestion des emprunts et des dettes binaires n'était pas stable.</p>
+<p>Et là… j'étais vraiment proche d'abandonner.</p>
+<hr>
+
+<h1>🔥 Le déclic</h1>
+<p>J'ai fait une pause de 2 jours pour vider ma tête.</p>
+<p>Puis un matin, je reviens avec une énorme énergie.</p>
+<p>Et là… énorme déclic.</p>
+<p>Je reprends toute ma logique du FULL ADDER.</p>
+<p>C'est à ce moment-là que mon FULL ADDER V3 stable est né.<br>Plus expérimental. Vraiment stable.</p>
+<p>Ensuite je crée la V2 du SUB avec une technique un peu… barbare 😭</p>
+
+<h3>9 XOR</h3>
+<p>Oui. 9 XOR.</p>
+<p>J'étais moi-même en train de rire devant ce que j'avais créé juste pour sécuriser certains cas négatifs.</p>
+<p>Malheureusement, j'ai supprimé cette version sans prendre de capture ou de photo. Et aujourd'hui encore je le regrette.</p>
+<hr>
+
+<h1>⚡ La vraie solution</h1>
+<p>Puis j'ai eu un autre déclic.</p>
+<p>J'ai retesté la fameuse méthode : <code>A + (-B)</code></p>
+<p>Au début ça ne fonctionnait pas correctement.</p>
+<p>Puis j'ai décidé de dupliquer certains modules et de reconstruire la logique autrement.</p>
+<p>Et là… tout fonctionne.</p>
+<p>C'est aussi à ce moment-là que j'ai compris quelque chose d'important :</p>
+<p>la retenue n'était pas seulement une retenue. C'était aussi elle qui indiquait si le système était dans un état négatif ou non.</p>
+<hr>
+
+<h1>🚀 Architecture scalable</h1>
+<p>Une fois ce problème réglé, tout est allé extrêmement vite.</p>
+<p>Sous l'effet de la joie, j'ai créé :</p>
+<ul>
+  <li>mon ALU 4 bits ;</li>
+  <li>puis 8 bits ;</li>
+  <li>puis 16 bits ;</li>
+</ul>
+<p>en environ 10 minutes.</p>
+<p>Parce que dès le début, j'avais pensé toute mon architecture comme un système modulaire et scalable.</p>
+<p>Chaque bloc pouvait être réutilisé et agrandi facilement.</p>
+<p>Et c'est exactement ce que je voulais depuis le début.</p>
+<hr>
+
+<h1>🔌 Câblage de l'ALU — La souffrance</h1>
+
+<p>Maintenant que toute la logique ADD/SUB était enfin stable — ce qui m'a quand même pris <strong>5 jours</strong> à cause des passages entre la V1, V2 puis V3 — je suis passé à la suite.</p>
+
+<p>Mais pour garder l'histoire dans un ordre logique, je vais expliquer ce qu'il restait encore à faire dans l'ALU.</p>
+
+<p>Il me restait :</p>
+
+<ul>
+  <li>un <strong>décodeur 3 bits</strong> ;</li>
+  <li>les portes logiques <strong>AND</strong>, <strong>OR</strong> et <strong>XOR</strong> en <strong>32 exemplaires chacune</strong>.</li>
+</ul>
+
+<p>Et là… c'était une étape monstrueuse.</p>
+
+<p>Ça m'a pris environ <strong>6 heures de travail</strong> quasiment non stop.  
+J'ai littéralement sacrifié une journée entière juste pour cette partie : toute une journée + encore 2 heures le lendemain.</p>
+
+<hr>
+
+<h1>🧠 Le décodeur — Le déclic</h1>
+
+<p>Le décodeur, je l'ai fait après.  
+Pas parce que c'était difficile, mais surtout parce que je ne savais pas comment les vrais systèmes faisaient ça proprement.</p>
+
+<p>Et en analysant le fonctionnement, plusieurs trucs ont directement provoqué un énorme déclic dans ma tête.</p>
+
+<p>J'ai compris qu'un décodeur pouvait gérer jusqu'à un certain nombre de bits proprement, et que pour aller plus loin il fallait combiner plusieurs décodeurs ensemble avec une logique spéciale.</p>
+
+<p>Mais ça… ça reviendra plus tard dans l'histoire 😭</p>
+
+<hr>
+
+<h1>🔧 Câblage monstrueux</h1>
+
+<p>Du coup je suis revenu sur mon ALU.</p>
+
+<p>Je devais maintenant câbler toutes les portes logiques une par une et ajouter mes propres barrières de sécurité avec des transistors classiques.</p>
+
+<p>Le seul truc que je n'ai pas entièrement créé de zéro : le décodeur classique.</p>
+
+<p>Parce que pour moi, un décodeur simple, c'était surtout du par cœur.  
+Et le par cœur, j'aime pas vraiment ça.</p>
+
+<p>Le seul vrai choix personnel que j'ai fait dans ce décodeur, c'était l'organisation des sorties et la façon de l'intégrer dans mon architecture.</p>
+
+<p>Par contre le <strong>décodeur 5 bits</strong>, lui je l'ai fait moi-même.  
+Et la première fois que j'ai réfléchi à sa logique, ça m'a vraiment fasciné.</p>
+
+<p>Vous allez voir pourquoi dans la partie sur les registres.</p>
+
+<hr>
+
+<h1>💀 Le calvaire des câbles</h1>
+
+<p>Pour cette ALU, j'ai dû câbler une quantité ABSURDE de fils.</p>
+
+<p>Je faisais ça non stop.  
+Des milliers de connexions.</p>
+
+<p>Voici le calcul :</p>
+
+<ul>
+  <li>ADD/SUB intégré : <strong>66 entrées</strong></li>
+  <li>XOR : <strong>64 entrées</strong></li>
+  <li>AND : <strong>64 entrées</strong></li>
+  <li>OR : <strong>64 entrées</strong></li>
+</ul>
+
+<p>Ce qui donne :</p>
+
+<p><strong>66 + 64 + 64 + 64 = 258 entrées à relier.</strong></p>
+
+<p>258 connexions.  
+Et ça, c'est seulement une partie de l'ALU 💀</p>
+
+<p>Et évidemment, je devais aussi réfléchir au <strong>cable management</strong>.</p>
+
+<hr>
+
+<h1>🎨 L'art du câblage</h1>
+
+<p>Du coup j'ai choisi le style de câblage que je préfère :</p>
+
+<p>des fils propres, organisés, avec des chemins précis, sans croisements inutiles.</p>
+
+<p>Et honnêtement… à la fin ça devient presque de l'art 😭</p>
+
+<p>Dans mon logiciel, j'essaie toujours d'utiliser le moins de fils possible et d'avoir un rendu visuel propre.</p>
+
+<p>Mais avant ça, j'avais pensé à utiliser des systèmes de <strong>bus simplifiés</strong>.</p>
+
+<p>Ça aurait été beaucoup plus simple et beaucoup moins fatigant.</p>
+
+<p>Mais j'ai volontairement refusé cette solution.</p>
+
+<p>Je voulais vraiment ressentir ce que ça fait de construire une architecture manuellement, comme un vrai concepteur de circuits.</p>
+
+<p>Du coup j'ai tout relié à la main.</p>
+
+<p>Par contre, pour les sorties finales, j'ai quand même utilisé un vrai bus.  
+Parce que là, ça devenait logique pour l'architecture finale de l'ALU.</p>
+
+<hr>
+
+<h1>🚌 Le bus final</h1>
+
+<p>J'ai donc relié tous les bus ensemble — <strong>4 au total</strong> — avec des portes OR à 4 entrées afin d'obtenir une seule sortie bus de <strong>32 bits</strong>.</p>
+
+<p>Et là… mon ALU était enfin terminée.</p>
+
+<p><strong>Entièrement.</strong></p>
+
+<p>Après tout ce temps, tous les bugs, toutes les versions et tout le câblage… c'était enfin fini.</p>
+
+<hr>
+
+<h1>⚡ Performance</h1>
+
+<p>Pour les curieux, cette ALU a une latence d'environ <strong>5370 ns</strong>.</p>
+
+<p>Ce qui donne environ <strong>180 kHz</strong>.</p>
+
+<p>Et honnêtement, pour ma première ALU entièrement terminée, je trouve ça vraiment correct.</p>
+
+<p>Surtout que dès le début j'avais prévu un objectif de seulement <strong>100 kHz</strong> pour mon CPU.</p>
+
+<p>Donc au final, j'étais largement satisfait 😭</p>
+
+<hr>
+
+<h1>🧩 LES REGISTRES — Fun</h1>
+
+<p>Puis après… LES REGISTRES 😭</p>
+
+<p>Et étonnamment, cette partie était vraiment fun.</p>
+
+<p>Avec les bascules à relier, les copier-coller, les connexions… c'était presque reposant comparé au reste.</p>
+
+<p>Du coup j'ai utilisé la méthode classique que tout le monde utilise pour les registres.</p>
+
+<p>Et j'ai créé un registre capable de stocker <strong>32 bits</strong>.</p>
+
+<p>Puis ensuite, j'ai transformé ce système en un registre capable de stocker <strong>32 nombres de 32 bits</strong> grâce à un <strong>décodeur 5 bits</strong> que j'ai conçu.</p>
+
+<hr>
+
+<h1>🔮 Le décodeur 5 bits — Fascinant</h1>
+
+<p>Le système du décodeur 5 bits m'a vraiment fasciné.</p>
+
+<p>Parce qu'il me rappelait une logique que j'avais déjà expérimentée quand j'étais plus petit avec des LEGO et des systèmes modulaires.</p>
+
+<p>Et honnêtement… je kiffais trop réfléchir à ce genre de structure 😭</p>
+
+<p>Du coup celui-là, je l'ai entièrement fait à la main.</p>
+
+<hr>
+
+<h1>🔁 Double bus — La solution</h1>
+
+<p>Mais il restait encore un problème :</p>
+
+<p>mon registre pouvait stocker <strong>32 nombres de 32 bits</strong>, mais il ne possédait qu'<strong>un seul bus d'entrée/sortie</strong>.</p>
+
+<p>Et pour mon ALU, ça devenait vite problématique.</p>
+
+<p>Du coup j'ai créé un autre module basé sur ce registre afin de le transformer en système à <strong>double bus entrée/sortie</strong>.</p>
+
+<p>Et honnêtement, cette partie était plutôt simple.</p>
+
+<p>Beaucoup de copier-coller, du reliage et surtout de l'organisation pour éviter d'envoyer les valeurs deux fois.</p>
+
+<p>Pour les curieux, ce registre a une latence d'environ <strong>3380 ns</strong>.</p>
+
+<p>Ce qui reste totalement acceptable pour mon objectif de fréquence.</p>
+
+<hr>
+
+<h1>⏱️ La clock — Contrôle</h1>
+
+<p>Et justement en parlant de fréquence :</p>
+
+<p>j'ai finalement utilisé la clock de base du logiciel.</p>
+
+<p>Je n'avais pas vraiment le choix pour une future intégration dans une <strong>Tang Nano 9K</strong>.</p>
+
+<p>Du coup j'ai surtout travaillé sur le contrôle de cette clock.</p>
+
+<p>J'ai ajouté un <strong>transistor P</strong> à la sortie afin de pouvoir stopper certaines parties du système.</p>
+
+<p>Comme ça, plus tard, je pourrai aussi réfléchir à de l'économie d'énergie.</p>
+
+<hr>
+
+<h1>📦 La ROM — Spoiler</h1>
+
+<p>Le dernier élément sur lequel j'ai commencé à travailler : la ROM.</p>
+
+<p>Mais pour l'instant… elle ne contient quasiment rien 😭</p>
+
+<p>Là je suis surtout en phase d'analyse pour préparer la suite du CPU.</p>
+
+<p>Par contre, même si je comprends comment une ROM fonctionne réellement, je ne peux pas totalement la recréer de zéro dans ce projet.</p>
+
+<p>Il y a deux raisons :</p>
+
+<ul>
+  <li>Le logiciel ne possède pas les composants mémoire transistorisés nécessaires.</li>
+  <li>Je devrai utiliser la ROM native du logiciel pour pouvoir compiler correctement le projet dans la Tang Nano 9K.</li>
+</ul>
+
+<hr>
+
+<h1>⏳ À SUIVRE...</h1>
+    `
+  }
+];
+
+// ============================================================
+// DATA — DOWNLOADS
+// ============================================================
+const DOWNLOADS = [
+  {
+    icon: "🧠",
+    title: "CPU 32-bit — Docs",
+    desc: "Documentation de mon processeur custom : specs ISA, schémas d'architecture.",
+    chips: ["PDF", "WIP", "En cours"],
+    btnIcon: "📄",
+    href: "#"
+  },
+  {
+    icon: "📄",
+    title: "CV — Ilyess El Gouchi",
+    desc: "Mon CV complet. 13 ans, passionné de tech, hardware et software.",
+    chips: ["PDF", "2025", "FR"],
+    btnIcon: "📥",
+    href: "#"
+  },
+];
+
+// ============================================================
+// DATA — TECH STACK
+// ============================================================
+const TECH_STACK = [
+  { emoji: "🦀", label: "Rust" },
+  { emoji: "🎮", label: "Godot 4" },
+  { emoji: "📜", label: "GDScript" },
+  { emoji: "⚙️", label: "C++" },
+  { emoji: "🧠", label: "CPU Design" },
+  { emoji: "🔌", label: "Logique numérique" },
+  { emoji: "🏗️", label: "Architecture CPU" },
+  { emoji: "💾", label: "Bas niveau" },
+  { emoji: "🎯", label: "From Scratch" },
+  { emoji: "🔬", label: "Hardware" },
+  { emoji: "🎨", label: "Game Design" },
+  { emoji: "📐", label: "ISA Design" }
+];
+
+// ============================================================
+// DATA — CONTACTS
+// ============================================================
+const CONTACTS = [
+  { icon: "✉️", label: "Email", value: "ton@email.com", href: "mailto:ton@email.com" },
+  { icon: "🐙", label: "GitHub", value: "github.com/MaxiStudioPro", href: "#" },
+  { icon: "💼", label: "LinkedIn", value: "linkedin.com/in/ilyess", href: "#" },
+  { icon: "🐦", label: "Twitter/X", value: "@MaxiStudioPro", href: "#" }
+];
+
+// ============================================================
+// CURSOR
+// ============================================================
+const cursor = document.getElementById('cursor');
+const cursorRing = document.getElementById('cursorRing');
+let cx = 0, cy = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => {
+  cx = e.clientX; cy = e.clientY;
+  cursor.style.left = cx - 6 + 'px';
+  cursor.style.top = cy - 6 + 'px';
+});
+
+(function animRing() {
+  rx += (cx - rx) * 0.12;
+  ry += (cy - ry) * 0.12;
+  cursorRing.style.left = rx - 20 + 'px';
+  cursorRing.style.top = ry - 20 + 'px';
+  requestAnimationFrame(animRing);
+})();
+
+document.addEventListener('mousedown', () => {
+  cursor.classList.add('clicking');
+  cursorRing.classList.add('clicking');
+});
+document.addEventListener('mouseup', () => {
+  cursor.classList.remove('clicking');
+  cursorRing.classList.remove('clicking');
+});
+
+// ============================================================
+// PARTICLES
+// ============================================================
+(function() {
+  const canvas = document.getElementById('particles-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [];
+  const N = 70;
+
+  function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function Particle() { this.reset(); }
+  Particle.prototype.reset = function() {
+    this.x = Math.random() * W;
+    this.y = Math.random() * H;
+    this.vx = (Math.random() - 0.5) * 0.4;
+    this.vy = (Math.random() - 0.5) * 0.4;
+    this.r = Math.random() * 1.5 + 0.3;
+    this.alpha = Math.random() * 0.5 + 0.1;
+    this.color = Math.random() > 0.5 ? '0,245,255' : '124,58,237';
+  };
+  Particle.prototype.update = function() {
+    this.x += this.vx; this.y += this.vy;
+    if (this.x < 0 || this.x > W || this.y < 0 || this.y > H) this.reset();
+  };
+
+  for (let i = 0; i < N; i++) particles.push(new Particle());
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => {
+      p.update();
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${p.color},${p.alpha})`;
+      ctx.fill();
+    });
+    for (let i = 0; i < N; i++) {
+      for (let j = i + 1; j < N; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const d = Math.sqrt(dx*dx + dy*dy);
+        if (d < 120) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(0,245,255,${0.07*(1-d/120)})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ============================================================
+// NAV SCROLL
+// ============================================================
+window.addEventListener('scroll', () => {
+  document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 50);
+});
+
+// ============================================================
+// TYPEWRITER
+// ============================================================
+(function() {
+  const phrases = [
+    "Développeur Rust à 90% de maîtrise",
+    "Godot & GDScript — 100% maîtrisé",
+    "En train de construire un CPU 32-bits",
+    "Créateur de jeux vidéo depuis 13 ans",
+    "Hardware + Software = MaxiStudioPro",
+    "Tout de zéro. Tout depuis ma tête.",
+    "C++ — En progression constante"
+  ];
+  let pi = 0, ci = 0, del = false;
+  const el = document.getElementById('typewriter');
+
+  function type() {
+    const full = phrases[pi];
+    if (!del) {
+      el.textContent = full.slice(0, ++ci);
+      if (ci === full.length) { del = true; setTimeout(type, 2000); return; }
+    } else {
+      el.textContent = full.slice(0, --ci);
+      if (ci === 0) { del = false; pi = (pi + 1) % phrases.length; }
+    }
+    setTimeout(type, del ? 45 : 75);
+  }
+  type();
+})();
+
+// ============================================================
+// REVEAL OBSERVER
+// ============================================================
+const revealObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    e.target.classList.add('visible');
+    e.target.querySelectorAll('.skill-fill').forEach(bar => {
+      bar.style.width = bar.dataset.width + '%';
+    });
+    e.target.querySelectorAll('[data-target]').forEach(el => {
+      const target = +el.dataset.target;
+      let curr = 0;
+      const step = target / 40;
+      const iv = setInterval(() => {
+        curr = Math.min(curr + step, target);
+        el.textContent = Math.round(curr) + (el.dataset.suffix || '+');
+        if (curr >= target) clearInterval(iv);
+      }, 40);
+    });
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+// ============================================================
+// LIGHTBOX
+// ============================================================
+let lbData = [], lbIdx = 0;
+
+function openLightbox(items, startIdx) {
+  lbData = items;
+  lbIdx = startIdx;
+  updateLightbox();
+  document.getElementById('lightbox').classList.add('open');
+}
+
+function updateLightbox() {
+  const item = lbData[lbIdx];
+  const lbEmoji = document.getElementById('lbEmoji');
+  const lbImg = document.getElementById('lbImg');
+  const lbCaption = document.getElementById('lbCaption');
+  const lbCounter = document.getElementById('lbCounter');
+
+  if (item.src) {
+    lbImg.src = item.src;
+    lbImg.style.display = 'block';
+    lbEmoji.style.display = 'none';
+  } else {
+    lbEmoji.textContent = item.emoji || '🖼️';
+    lbEmoji.style.display = 'block';
+    lbImg.style.display = 'none';
+  }
+  lbCaption.textContent = item.label || '';
+  lbCounter.textContent = `${lbIdx + 1} / ${lbData.length}`;
+}
+
+document.getElementById('lbClose').addEventListener('click', () => {
+  document.getElementById('lightbox').classList.remove('open');
+});
+document.getElementById('lbPrev').addEventListener('click', () => {
+  lbIdx = (lbIdx - 1 + lbData.length) % lbData.length;
+  updateLightbox();
+});
+document.getElementById('lbNext').addEventListener('click', () => {
+  lbIdx = (lbIdx + 1) % lbData.length;
+  updateLightbox();
+});
+document.getElementById('lightbox').addEventListener('click', e => {
+  if (e.target === document.getElementById('lightbox')) {
+    document.getElementById('lightbox').classList.remove('open');
+  }
+});
+
+// ============================================================
+// RENDER PROJECTS
+// ============================================================
+function renderProjects(filter = 'all') {
+  const grid = document.getElementById('projectsGrid');
+  grid.innerHTML = '';
+
+  const filtered = filter === 'all' ? PROJECTS : PROJECTS.filter(p => p.category === filter);
+
+  filtered.forEach((proj, idx) => {
+    const card = document.createElement('div');
+    card.className = 'project-card reveal';
+    card.style.animationDelay = idx * 0.1 + 's';
+
+    const tagsHTML = proj.tags.map(t =>
+      `<span class="project-tag" style="color:${t.color};border-color:${t.color}30;background:${t.color}10">${t.label}</span>`
+    ).join('');
+
+    const slidesHTML = proj.cardImages.map((img, i) => `
+      <div class="gallery-slide ${i === 0 ? 'active' : ''}">
+        <div class="gallery-placeholder">
+          <span class="ph-emoji">${img.emoji}</span>
+          <span class="ph-label">${img.label}</span>
+        </div>
+      </div>
+    `).join('');
+
+    const dotsHTML = proj.cardImages.map((_, i) =>
+      `<div class="gallery-dot ${i === 0 ? 'active' : ''}" data-idx="${i}"></div>`
+    ).join('');
+
+    card.innerHTML = `
+      <div class="project-gallery" data-current="0">
+        ${slidesHTML}
+        <div class="project-badge" style="color:${proj.badgeColor};border-color:${proj.badgeColor}30">${proj.badge}</div>
+        <div class="img-count-badge">🖼 ${proj.cardImages.length}</div>
+        <button class="gallery-arrow prev">‹</button>
+        <button class="gallery-arrow next">›</button>
+        <div class="gallery-nav">${dotsHTML}</div>
+      </div>
+      <div class="project-info">
+        <div class="project-tags">${tagsHTML}</div>
+        <h3 class="project-title">${proj.title}</h3>
+        <p class="project-desc">${proj.desc}</p>
+        <div class="project-actions">
+          <button class="btn-card btn-card-primary open-proj-page" data-id="${proj.id}">🔍 Voir le projet</button>
+          ${proj.links[0] ? `<a href="${proj.links[0].href}" class="btn-card btn-card-secondary">${proj.links[0].icon} ${proj.links[0].label}</a>` : ''}
+        </div>
+      </div>
+    `;
+
+    grid.appendChild(card);
+
+    // Gallery nav
+    const gallery = card.querySelector('.project-gallery');
+    const slides = gallery.querySelectorAll('.gallery-slide');
+    const dots = gallery.querySelectorAll('.gallery-dot');
+
+    function goTo(n) {
+      const curr = +gallery.dataset.current;
+      slides[curr].classList.remove('active');
+      dots[curr].classList.remove('active');
+      const next = (n + slides.length) % slides.length;
+      slides[next].classList.add('active');
+      dots[next].classList.add('active');
+      gallery.dataset.current = next;
+    }
+
+    gallery.querySelector('.prev').addEventListener('click', e => { e.stopPropagation(); goTo(+gallery.dataset.current - 1); });
+    gallery.querySelector('.next').addEventListener('click', e => { e.stopPropagation(); goTo(+gallery.dataset.current + 1); });
+    dots.forEach(d => d.addEventListener('click', e => { e.stopPropagation(); goTo(+d.dataset.idx); }));
+
+    revealObserver.observe(card);
+  });
+
+  grid.querySelectorAll('.open-proj-page').forEach(btn => {
+    btn.addEventListener('click', () => openProjectPage(+btn.dataset.id));
+  });
+}
+
+// ============================================================
+// PROJECT PAGE — PAGE COMPLÈTE AVEC LE CONTENU RÉDIGÉ
+// ============================================================
+function openProjectPage(id) {
+  const proj = PROJECTS.find(p => p.id === id);
+  if (!proj) return;
+
+  document.getElementById('projPageTitle').textContent = proj.title;
+  document.getElementById('projPageBadge').textContent = proj.badge;
+
+  const body = document.getElementById('projPageBody');
+  body.innerHTML = '';
+
+  // Hero image / emoji
+  const heroDiv = document.createElement('div');
+  heroDiv.className = 'proj-hero-img';
+  heroDiv.textContent = proj.heroEmoji || '📁';
+  body.appendChild(heroDiv);
+
+  // Tags
+  const tagsDiv = document.createElement('div');
+  tagsDiv.className = 'proj-tags-row';
+  tagsDiv.innerHTML = proj.tags.map(t =>
+    `<span class="proj-tag-big" style="color:${t.color};border-color:${t.color}40;background:${t.color}10">${t.label}</span>`
+  ).join('');
+  body.appendChild(tagsDiv);
+
+  // Liens
+  if (proj.links && proj.links.length) {
+    const linksDiv = document.createElement('div');
+    linksDiv.style.cssText = 'display:flex;gap:1rem;margin-bottom:3rem;flex-wrap:wrap;';
+    linksDiv.innerHTML = proj.links.map(l =>
+      `<a href="${l.href}" class="btn btn-primary" style="font-size:0.85rem;padding:0.6rem 1.5rem;">${l.icon} ${l.label}</a>`
+    ).join('');
+    body.appendChild(linksDiv);
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // CONTENU DE L'ÉDITEUR (ton texte rédigé)
+  // ══════════════════════════════════════════════════════════
+  const editorDiv = document.createElement('div');
+  editorDiv.className = 'proj-editor-content';
+  editorDiv.innerHTML = proj.editorContent;
+  body.appendChild(editorDiv);
+
+  // Ouvre la page
+  document.getElementById('projectPage').classList.add('open');
+  document.getElementById('projectPage').scrollTop = 0;
+  document.body.style.overflow = 'hidden';
+}
+
+document.getElementById('projPageBack').addEventListener('click', () => {
+  document.getElementById('projectPage').classList.remove('open');
+  document.body.style.overflow = '';
+});
+
+// ============================================================
+// FILTER
+// ============================================================
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderProjects(btn.dataset.filter);
+  });
+});
+
+// ============================================================
+// RENDER DOWNLOADS
+// ============================================================
+function renderDownloads() {
+  const grid = document.getElementById('downloadsGrid');
+  DOWNLOADS.forEach(dl => {
+    const card = document.createElement('div');
+    card.className = 'download-card reveal';
+    card.innerHTML = `
+      <div class="dl-logo">${dl.icon}</div>
+      <div class="dl-info">
+        <div class="dl-title">${dl.title}</div>
+        <div class="dl-desc">${dl.desc}</div>
+        <div class="dl-meta">${dl.chips.map(c => `<span class="dl-chip">${c}</span>`).join('')}</div>
+      </div>
+      <a href="${dl.href}" class="dl-btn" title="Télécharger">${dl.btnIcon}</a>
+    `;
+    grid.appendChild(card);
+    revealObserver.observe(card);
+  });
+}
+
+// ============================================================
+// RENDER MARQUEE
+// ============================================================
+function renderMarquee() {
+  const track = document.getElementById('marqueeTrack');
+  const double = [...TECH_STACK, ...TECH_STACK];
+  track.innerHTML = double.map(t =>
+    `<div class="tech-pill"><span>${t.emoji}</span><span>${t.label}</span></div>`
+  ).join('');
+}
+
+// ============================================================
+// RENDER CONTACT
+// ============================================================
+function renderContact() {
+  const grid = document.getElementById('contactGrid');
+  CONTACTS.forEach(c => {
+    const a = document.createElement('a');
+    a.className = 'contact-card';
+    a.href = c.href;
+    a.innerHTML = `
+      <div class="contact-icon">${c.icon}</div>
+      <div class="contact-label">${c.label}</div>
+      <div class="contact-value">${c.value}</div>
+    `;
+    grid.appendChild(a);
+    revealObserver.observe(a);
+  });
+}
+
+// ============================================================
+// KEYBOARD
+// ============================================================
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.getElementById('lightbox').classList.remove('open');
+    document.getElementById('projectPage').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  if (document.getElementById('lightbox').classList.contains('open')) {
+    if (e.key === 'ArrowLeft') { lbIdx = (lbIdx - 1 + lbData.length) % lbData.length; updateLightbox(); }
+    if (e.key === 'ArrowRight') { lbIdx = (lbIdx + 1) % lbData.length; updateLightbox(); }
+  }
+});
+
+// ============================================================
+// INIT
+// ============================================================
+renderProjects();
+renderDownloads();
+renderMarquee();
+renderContact();
+</script>
+</body>
+</html>
