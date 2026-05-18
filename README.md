@@ -5,6 +5,8 @@
 l'IA a juste corrigé l'orthographe et amélioré la formulation pour mon portfolio.
 Le projet, lui, est 100% le mien.
 
+JE Tien a dire que j'ai utiliser le logitiel Antares c'est ici ou j'ai tous fait en numerique
+
 🎯 Le Projet
 Mon but est de créer un CPU 32 bits entièrement fait par moi.
 Je ne copie personne, je crée tout avec mes propres idées et ma logique.
