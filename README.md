@@ -15,7 +15,7 @@ Pourquoi j'ai utiliser RISC-V et pas cree ma propre architecture ? car cargo sup
 ducoup cree une archetchture se sera un plan pour plus tard 😉.
 
 MON Projet sera bientot en FULL opensource pour se qui veut apprendre comme moi ou simplment voir mon travaille
-dans mon projet je laiss tou mes errer sauf mes tres ancien que j'ai suprimer par erreur ducoup voue pouvait voir les erreur que j'ai effectuer .
+dans mon projet je laiss tou mes errer sauf mes tres ancien que j'ai suprimer par erreur 😭, ducoup voue pouvait voir les erreur que j'ai effectuer .
 Le projet sera opensource lorqu'il sera fini .
 
 🎯 Le Projet
