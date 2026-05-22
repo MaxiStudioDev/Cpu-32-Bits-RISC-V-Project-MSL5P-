@@ -1,5 +1,8 @@
 # Cpu-32-Bits-RISC-V-Project-MSL5P-
 
+Projet ABONDONER suit a une migration vere Archlinux (Hyprland),
+J'ai sauvgarder le mauvait fichier et J'ai TOUS perdu TOUS sauf les feuille mais sinon TOUS PERDU 😭
+
 ⚠️ TEXTE CORRIGÉ PAR IA (car mon talent en français est casi nul !)
 📝 Note que C'est moi qui ai fait tous les choix de design, 
 l'IA a juste corrigé l'orthographe et amélioré la formulation pour mon portfolio.
