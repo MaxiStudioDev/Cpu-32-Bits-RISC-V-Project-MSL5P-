@@ -2,6 +2,7 @@
 
 Visiter Mon Portfolio ET METTER F11 pour avoir ma meuilleur experience !
 sa me fera vrement plaisir :) 😉 !
+https://maxistudiodev.github.io/Cpu-32-Bits-Project-MSL5P/
 
 Projet Retarder suit a une migration vere Archlinux (Hyprland),
 J'ai sauvgarder le mauvait fichier et J'ai TOUS perdu TOUS sauf les feuille mais sinon TOUS PERDU 😭
