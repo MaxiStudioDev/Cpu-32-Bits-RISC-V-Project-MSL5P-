@@ -1,14 +1,16 @@
 # Cpu-32-Bits-RISC-V-Project-MSL5P-
 
-Projet ABONDONER suit a une migration vere Archlinux (Hyprland),
+Projet Retarder suit a une migration vere Archlinux (Hyprland),
 J'ai sauvgarder le mauvait fichier et J'ai TOUS perdu TOUS sauf les feuille mais sinon TOUS PERDU 😭
+Ducoup J'ai decider de changer un peut le processe je commencerait par du 4bits Pour etre sur que sa fontionne mon architecture
+puit je finirait pas du 32bits !
 
 ⚠️ TEXTE CORRIGÉ PAR IA (car mon talent en français est casi nul !)
 📝 Note que C'est moi qui ai fait tous les choix de design, 
 l'IA a juste corrigé l'orthographe et amélioré la formulation pour mon portfolio.
 Le projet, lui, est 100% le mien.
 
-JE Tien a dire que j'ai utiliser le logitiel Antares c'est ici ou j'ai tous fait en numerique
+JE Tien a dire que j'ai utiliser le logitiel Antares (antarescircuit.io) c'est ici ou j'ai tous fait en numerique
 
 Mon age est actuelment 13ans et le Projet et en court de devloppement sa fait 6-7jour que j'y travaille dessu environ 1 a 6h par jours
 TOUT  se que je fait je le fait de A a Z sauf lorsque mon logitiel ne le suporte pas
