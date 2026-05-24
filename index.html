@@ -1972,374 +1972,315 @@
 // ============================================================
 // DATA — PROJETS (avec ton texte complet pour le CPU)
 // ============================================================
-const PROJECTS = [
-  {
-    id: 1,
-    title: "Processeur 32-bits Custom",
-    category: "hardware",
-    badge: "🧠 Hardware",
-    badgeColor: "var(--accent)",
-    tags: [
-      { label: "Architecture CPU", color: "#f59e0b" },
-      { label: "Logique numérique", color: "#ef4444" },
-      { label: "Rust", color: "#f97316" },
-      { label: "From Scratch", color: "#7c3aed" }
-    ],
-    desc: "Conception d'un processeur 32-bits de A à Z. Architecture, jeu d'instructions, ALU, tout créé depuis ma tête. Aucune copie.",
-    heroEmoji: "🧠",
-    cardImages: [
-      { emoji: "🧠", label: "Architecture CPU" },
-      { emoji: "📐", label: "ISA Design" },
-      { emoji: "⚡", label: "Logique ALU" },
-    ],
-    links: [
-      { label: "GitHub", icon: "📁", href: "#" }
-    ],
-    // ══════════════════════════════════════════════════════════════
-    // TON TEXTE COMPLET — Ce qui s'affiche dans la page projet
-    // ══════════════════════════════════════════════════════════════
-    editorContent: `
-<h1>🎯 Le Projet</h1>
-<p>Mon but est de créer un CPU 32 bits entièrement fait par moi.<br>Je ne copie personne, je crée tout avec mes propres idées et ma logique.</p>
-<p>Depuis longtemps, je m'intéresse au fonctionnement réel des ordinateurs et à l'électronique logique.<br>Au lieu de juste utiliser des programmes, j'aime comprendre comment une machine fonctionne à l'intérieur.</p>
-<hr>
+Fréro 😭🔥
+Ton portfolio commence vraiment à ressembler à un vrai devlog d’architecture hardware maintenant.
 
-<h1>⚡ ALU — Le commencement</h1>
-<p>J'ai commencé par l'ALU (<em>Arithmetic Logic Unit</em>), parce que c'était déjà un domaine que je maîtrisais bien.</p>
-<p>Vers mes 12 ans, j'avais déjà créé une calculatrice 8 bits entièrement sur Minecraft, construite de zéro uniquement avec de la logique Redstone et des <strong>FULL ADDER</strong>.<br>J'avais développé ce projet en environ 3 jours juste par passion.</p>
-<hr>
+Le meilleur endroit pour ajouter les nouvelles parties, c’est juste AVANT :
 
-<h1>🧠 Réflexion et conception</h1>
-<p>Au début, je faisais énormément de schémas sur papier pendant les temps morts en cours.</p>
-<p>Je réfléchissais directement à la logique des additions binaires :</p>
-<ul>
-  <li><code>1 + 1 = 10</code></li>
-  <li><code>1 + 0 = 1</code></li>
-</ul>
-<p>Je me suis donc dit que quand les deux entrées sont à <code>1</code>, une retenue devait être créée.</p>
-<p>J'ai alors utilisé une porte logique <strong>AND</strong> pour gérer cette retenue :</p>
-<ul>
-  <li><code>1 AND 1 = 1</code></li>
-  <li>toutes les autres combinaisons donnent <code>0</code></li>
-</ul>
-<p>Premier objectif validé ✅</p>
-<p>Ensuite, j'ai commencé à imaginer plusieurs versions de mon ADDER directement sur papier.<br>Je faisais énormément de tests théoriques avant même de construire les circuits.</p>
-<p>Mais un problème est rapidement apparu :</p>
-<p>beaucoup de mes concepts fonctionnaient sur papier, mais ne convenaient pas aux systèmes industriels ou aux logiciels de simulation utilisant des portes logiques "propres".</p>
-<p>Du coup, j'ai décidé d'adapter toute mon ALU à une architecture plus stable et plus réaliste.</p>
-<hr>
-
-<h1>🔧 Ajout de sécurités</h1>
-<p>En travaillant sur mon architecture, j'ai aussi ajouté plusieurs sécurités logiques.</p>
-<p>Le but était d'éviter que certaines parties du CPU exécutent des calculs ou changent d'état sans qu'une instruction le demande réellement.</p>
-<hr>
-
-<h1>🚀 Le FULL ADDER</h1>
-<p>Après ça, je suis passé au <strong>FULL ADDER</strong>.</p>
-<p>Le but était maintenant de gérer :</p>
-<ul>
-  <li>les deux bits d'entrée ;</li>
-  <li>mais aussi la retenue provenant de l'addition précédente.</li>
-</ul>
-<p>C'est ce qui permet ensuite de relier plusieurs additions ensemble pour construire une vraie architecture capable de gérer plusieurs bits.</p>
-<hr>
-
-<h1>💀 Le SUB — Le vrai début des problèmes</h1>
-<p>J'étais super content de mon FULL ADDER.</p>
-<p>Mais ensuite je suis passé au <strong>SUB</strong>… et c'est là que les vrais problèmes ont commencé.</p>
-<p>J'avais deux choix :</p>
-
-<h3>Solution 1</h3>
-<p>Utiliser la technique <code>A + (!B)</code> utilisée dans beaucoup de vrais processeurs.<br>Mais au début, je ne la considérais pas comme totalement fiable.</p>
-
-<h3>Solution 2</h3>
-<p>Créer tout le système de soustraction moi-même de zéro.</p>
-<p>Et évidemment… c'est cette solution que j'ai choisie 😭</p>
-<hr>
-
-<h1>⚠️ Le FULL SUB — L'enfer</h1>
-<p>Au début, mon SUB fonctionnait parfaitement.</p>
-<p>Le vrai problème est arrivé quand j'ai commencé le <strong>FULL SUB</strong>, donc la gestion des retenues, des dettes et des emprunts binaires.</p>
-<p>Là c'était un enfer.</p>
-<p>J'ai essayé énormément de techniques :</p>
-<ul>
-  <li>sécurités logiques ;</li>
-  <li>protections ;</li>
-  <li>nouvelles structures ;</li>
-  <li>systèmes de contrôle.</li>
-</ul>
-<hr>
-
-<h1>🐛 Les deux bugs qui m'ont détruit</h1>
-<p>Après énormément de travail, je termine enfin mon FULL SUB.</p>
-<p>Je teste tout. Tout fonctionne.</p>
-<p>J'étais littéralement à deux doigts de crier de joie.</p>
-<p>Puis la réalité me rattrape 💀</p>
-
-<h3>Premier bug</h3>
-<p>Dans certains cas négatifs très précis : <code>0 - 1 + 0 - 0</code> le système me donnait <code>-3</code> en décimal. Ce qui était totalement faux.</p>
-
-<h3>Deuxième bug</h3>
-<p>La gestion des emprunts et des dettes binaires n'était pas stable.</p>
-<p>Et là… j'étais vraiment proche d'abandonner.</p>
-<hr>
-
-<h1>🔥 Le déclic</h1>
-<p>J'ai fait une pause de 2 jours pour vider ma tête.</p>
-<p>Puis un matin, je reviens avec une énorme énergie.</p>
-<p>Et là… énorme déclic.</p>
-<p>Je reprends toute ma logique du FULL ADDER.</p>
-<p>C'est à ce moment-là que mon FULL ADDER V3 stable est né.<br>Plus expérimental. Vraiment stable.</p>
-<p>Ensuite je crée la V2 du SUB avec une technique un peu… barbare 😭</p>
-
-<h3>9 XOR</h3>
-<p>Oui. 9 XOR.</p>
-<p>J'étais moi-même en train de rire devant ce que j'avais créé juste pour sécuriser certains cas négatifs.</p>
-<p>Malheureusement, j'ai supprimé cette version sans prendre de capture ou de photo. Et aujourd'hui encore je le regrette.</p>
-<hr>
-
-<h1>⚡ La vraie solution</h1>
-<p>Puis j'ai eu un autre déclic.</p>
-<p>J'ai retesté la fameuse méthode : <code>A + (-B)</code></p>
-<p>Au début ça ne fonctionnait pas correctement.</p>
-<p>Puis j'ai décidé de dupliquer certains modules et de reconstruire la logique autrement.</p>
-<p>Et là… tout fonctionne.</p>
-<p>C'est aussi à ce moment-là que j'ai compris quelque chose d'important :</p>
-<p>la retenue n'était pas seulement une retenue. C'était aussi elle qui indiquait si le système était dans un état négatif ou non.</p>
-<hr>
-
-<h1>🚀 Architecture scalable</h1>
-<p>Une fois ce problème réglé, tout est allé extrêmement vite.</p>
-<p>Sous l'effet de la joie, j'ai créé :</p>
-<ul>
-  <li>mon ALU 4 bits ;</li>
-  <li>puis 8 bits ;</li>
-  <li>puis 16 bits ;</li>
-</ul>
-<p>en environ 10 minutes.</p>
-<p>Parce que dès le début, j'avais pensé toute mon architecture comme un système modulaire et scalable.</p>
-<p>Chaque bloc pouvait être réutilisé et agrandi facilement.</p>
-<p>Et c'est exactement ce que je voulais depuis le début.</p>
-<hr>
-
-<h1>🔌 Câblage de l'ALU — La souffrance</h1>
-
-<p>Maintenant que toute la logique ADD/SUB était enfin stable — ce qui m'a quand même pris <strong>5 jours</strong> à cause des passages entre la V1, V2 puis V3 — je suis passé à la suite.</p>
-
-<p>Mais pour garder l'histoire dans un ordre logique, je vais expliquer ce qu'il restait encore à faire dans l'ALU.</p>
-
-<p>Il me restait :</p>
-
-<ul>
-  <li>un <strong>décodeur 3 bits</strong> ;</li>
-  <li>les portes logiques <strong>AND</strong>, <strong>OR</strong> et <strong>XOR</strong> en <strong>32 exemplaires chacune</strong>.</li>
-</ul>
-
-<p>Et là… c'était une étape monstrueuse.</p>
-
-<p>Ça m'a pris environ <strong>6 heures de travail</strong> quasiment non stop.  
-J'ai littéralement sacrifié une journée entière juste pour cette partie : toute une journée + encore 2 heures le lendemain.</p>
-
-<hr>
-
-<h1>🧠 Le décodeur — Le déclic</h1>
-
-<p>Le décodeur, je l'ai fait après.  
-Pas parce que c'était difficile, mais surtout parce que je ne savais pas comment les vrais systèmes faisaient ça proprement.</p>
-
-<p>Et en analysant le fonctionnement, plusieurs trucs ont directement provoqué un énorme déclic dans ma tête.</p>
-
-<p>J'ai compris qu'un décodeur pouvait gérer jusqu'à un certain nombre de bits proprement, et que pour aller plus loin il fallait combiner plusieurs décodeurs ensemble avec une logique spéciale.</p>
-
-<p>Mais ça… ça reviendra plus tard dans l'histoire 😭</p>
-
-<hr>
-
-<h1>🔧 Câblage monstrueux</h1>
-
-<p>Du coup je suis revenu sur mon ALU.</p>
-
-<p>Je devais maintenant câbler toutes les portes logiques une par une et ajouter mes propres barrières de sécurité avec des transistors classiques.</p>
-
-<p>Le seul truc que je n'ai pas entièrement créé de zéro : le décodeur classique.</p>
-
-<p>Parce que pour moi, un décodeur simple, c'était surtout du par cœur.  
-Et le par cœur, j'aime pas vraiment ça.</p>
-
-<p>Le seul vrai choix personnel que j'ai fait dans ce décodeur, c'était l'organisation des sorties et la façon de l'intégrer dans mon architecture.</p>
-
-<p>Par contre le <strong>décodeur 5 bits</strong>, lui je l'ai fait moi-même.  
-Et la première fois que j'ai réfléchi à sa logique, ça m'a vraiment fasciné.</p>
-
-<p>Vous allez voir pourquoi dans la partie sur les registres.</p>
-
-<hr>
-
-<h1>💀 Le calvaire des câbles</h1>
-
-<p>Pour cette ALU, j'ai dû câbler une quantité ABSURDE de fils.</p>
-
-<p>Je faisais ça non stop.  
-Des milliers de connexions.</p>
-
-<p>Voici le calcul :</p>
-
-<ul>
-  <li>ADD/SUB intégré : <strong>66 entrées</strong></li>
-  <li>XOR : <strong>64 entrées</strong></li>
-  <li>AND : <strong>64 entrées</strong></li>
-  <li>OR : <strong>64 entrées</strong></li>
-</ul>
-
-<p>Ce qui donne :</p>
-
-<p><strong>66 + 64 + 64 + 64 = 258 entrées à relier.</strong></p>
-
-<p>258 connexions.  
-Et ça, c'est seulement une partie de l'ALU 💀</p>
-
-<p>Et évidemment, je devais aussi réfléchir au <strong>cable management</strong>.</p>
-
-<hr>
-
-<h1>🎨 L'art du câblage</h1>
-
-<p>Du coup j'ai choisi le style de câblage que je préfère :</p>
-
-<p>des fils propres, organisés, avec des chemins précis, sans croisements inutiles.</p>
-
-<p>Et honnêtement… à la fin ça devient presque de l'art 😭</p>
-
-<p>Dans mon logiciel, j'essaie toujours d'utiliser le moins de fils possible et d'avoir un rendu visuel propre.</p>
-
-<p>Mais avant ça, j'avais pensé à utiliser des systèmes de <strong>bus simplifiés</strong>.</p>
-
-<p>Ça aurait été beaucoup plus simple et beaucoup moins fatigant.</p>
-
-<p>Mais j'ai volontairement refusé cette solution.</p>
-
-<p>Je voulais vraiment ressentir ce que ça fait de construire une architecture manuellement, comme un vrai concepteur de circuits.</p>
-
-<p>Du coup j'ai tout relié à la main.</p>
-
-<p>Par contre, pour les sorties finales, j'ai quand même utilisé un vrai bus.  
-Parce que là, ça devenait logique pour l'architecture finale de l'ALU.</p>
-
-<hr>
-
-<h1>🚌 Le bus final</h1>
-
-<p>J'ai donc relié tous les bus ensemble — <strong>4 au total</strong> — avec des portes OR à 4 entrées afin d'obtenir une seule sortie bus de <strong>32 bits</strong>.</p>
-
-<p>Et là… mon ALU était enfin terminée.</p>
-
-<p><strong>Entièrement.</strong></p>
-
-<p>Après tout ce temps, tous les bugs, toutes les versions et tout le câblage… c'était enfin fini.</p>
-
-<hr>
-
-<h1>⚡ Performance</h1>
-
-<p>Pour les curieux, cette ALU a une latence d'environ <strong>5370 ns</strong>.</p>
-
-<p>Ce qui donne environ <strong>180 kHz</strong>.</p>
-
-<p>Et honnêtement, pour ma première ALU entièrement terminée, je trouve ça vraiment correct.</p>
-
-<p>Surtout que dès le début j'avais prévu un objectif de seulement <strong>100 kHz</strong> pour mon CPU.</p>
-
-<p>Donc au final, j'étais largement satisfait 😭</p>
-
-<hr>
-
-<h1>🧩 LES REGISTRES — Fun</h1>
-
-<p>Puis après… LES REGISTRES 😭</p>
-
-<p>Et étonnamment, cette partie était vraiment fun.</p>
-
-<p>Avec les bascules à relier, les copier-coller, les connexions… c'était presque reposant comparé au reste.</p>
-
-<p>Du coup j'ai utilisé la méthode classique que tout le monde utilise pour les registres.</p>
-
-<p>Et j'ai créé un registre capable de stocker <strong>32 bits</strong>.</p>
-
-<p>Puis ensuite, j'ai transformé ce système en un registre capable de stocker <strong>32 nombres de 32 bits</strong> grâce à un <strong>décodeur 5 bits</strong> que j'ai conçu.</p>
-
-<hr>
-
-<h1>🔮 Le décodeur 5 bits — Fascinant</h1>
-
-<p>Le système du décodeur 5 bits m'a vraiment fasciné.</p>
-
-<p>Parce qu'il me rappelait une logique que j'avais déjà expérimentée quand j'étais plus petit avec des LEGO et des systèmes modulaires.</p>
-
-<p>Et honnêtement… je kiffais trop réfléchir à ce genre de structure 😭</p>
-
-<p>Du coup celui-là, je l'ai entièrement fait à la main.</p>
-
-<hr>
-
-<h1>🔁 Double bus — La solution</h1>
-
-<p>Mais il restait encore un problème :</p>
-
-<p>mon registre pouvait stocker <strong>32 nombres de 32 bits</strong>, mais il ne possédait qu'<strong>un seul bus d'entrée/sortie</strong>.</p>
-
-<p>Et pour mon ALU, ça devenait vite problématique.</p>
-
-<p>Du coup j'ai créé un autre module basé sur ce registre afin de le transformer en système à <strong>double bus entrée/sortie</strong>.</p>
-
-<p>Et honnêtement, cette partie était plutôt simple.</p>
-
-<p>Beaucoup de copier-coller, du reliage et surtout de l'organisation pour éviter d'envoyer les valeurs deux fois.</p>
-
-<p>Pour les curieux, ce registre a une latence d'environ <strong>3380 ns</strong>.</p>
-
-<p>Ce qui reste totalement acceptable pour mon objectif de fréquence.</p>
-
-<hr>
-
-<h1>⏱️ La clock — Contrôle</h1>
-
-<p>Et justement en parlant de fréquence :</p>
-
-<p>j'ai finalement utilisé la clock de base du logiciel.</p>
-
-<p>Je n'avais pas vraiment le choix pour une future intégration dans une <strong>Tang Nano 9K</strong>.</p>
-
-<p>Du coup j'ai surtout travaillé sur le contrôle de cette clock.</p>
-
-<p>J'ai ajouté un <strong>transistor P</strong> à la sortie afin de pouvoir stopper certaines parties du système.</p>
-
-<p>Comme ça, plus tard, je pourrai aussi réfléchir à de l'économie d'énergie.</p>
-
-<hr>
-
-<h1>📦 La ROM — Spoiler</h1>
-
-<p>Le dernier élément sur lequel j'ai commencé à travailler : la ROM.</p>
-
-<p>Mais pour l'instant… elle ne contient quasiment rien 😭</p>
-
-<p>Là je suis surtout en phase d'analyse pour préparer la suite du CPU.</p>
-
-<p>Par contre, même si je comprends comment une ROM fonctionne réellement, je ne peux pas totalement la recréer de zéro dans ce projet.</p>
-
-<p>Il y a deux raisons :</p>
-
-<ul>
-  <li>Le logiciel ne possède pas les composants mémoire transistorisés nécessaires.</li>
-  <li>Je devrai utiliser la ROM native du logiciel pour pouvoir compiler correctement le projet dans la Tang Nano 9K.</li>
-</ul>
-
+```html
 <hr>
 
 <h1>⏳ À SUIVRE...</h1>
-    `
-  }
-];
+```
+
+Du coup ajoute exactement ça à la fin de ton `editorContent` :
+
+```html
+<hr>
+
+<h1>🌍 La migration — La catastrophe</h1>
+
+<p>Un jour, je me suis réveillé et Windows commençait vraiment à me fatiguer :</p>
+
+<ul>
+  <li>lenteurs ;</li>
+  <li>bugs ;</li>
+  <li>système lourd ;</li>
+  <li>problèmes constants.</li>
+</ul>
+
+<p>Du coup, j'ai décidé de migrer encore une fois vers Linux 😭</p>
+
+<p>Et cette fois, je suis parti sur <strong>Arch Linux</strong> avec <strong>Hyprland</strong>.</p>
+
+<p>Mais le problème, c'est que mon PC utilise un CPU Gemini Lake avec un ancien écran.</p>
+
+<p>Et là… catastrophe 💀</p>
+
+<ul>
+  <li>problèmes d'affichage ;</li>
+  <li>drivers ;</li>
+  <li>écran qui bug ;</li>
+  <li>affichage instable.</li>
+</ul>
+
+<p>Du coup j'ai passé énormément de temps à corriger tous les problèmes liés à la migration.</p>
+
+<p>Et pendant cette migration…</p>
+
+<p>j'ai sauvegardé les mauvais fichiers.</p>
+
+<p>Et là…</p>
+
+<p><strong>TOUT perdu 😭</strong></p>
+
+<p>Le CPU.<br>
+L'ALU.<br>
+Les registres.<br>
+Le câblage.<br>
+Les versions.<br>
+Les tests.</p>
+
+<p>Tout.</p>
+
+<p>Le seul truc que j'avais encore : mes feuilles papier.</p>
+
+<hr>
+
+<h1>😵 Moment de fatigue</h1>
+
+<p>Honnêtement, à ce moment-là, j'étais vraiment au bord d'abandonner.</p>
+
+<p>Le projet était devenu énorme à mes yeux.</p>
+
+<p>J'avais déjà investi environ <strong>16 heures</strong> de travail dedans.  
+Et pour moi, c'était énorme.</p>
+
+<p>J'ai essayé de récupérer les fichiers.</p>
+
+<p>Impossible.</p>
+
+<p>J'ai essayé plusieurs méthodes.</p>
+
+<p>Toujours impossible.</p>
+
+<p>Du coup, j'ai préféré faire une pause.</p>
+
+<p>Parce que je sais que prendre des décisions quand je suis mentalement détruit, c'est rarement une bonne idée.</p>
+
+<p>Alors j'ai arrêté pendant <strong>1 jour complet</strong>.</p>
+
+<hr>
+
+<h1>🔥 Moment incroyable</h1>
+
+<p>Puis un matin… je me suis réveillé.</p>
+
+<p>Et là, au lieu d'abandonner, j'ai repris mes feuilles.</p>
+
+<p>J'ai recommencé toute l'architecture en <strong>4 bits</strong> pour repartir sur des bases propres et vérifier toute ma logique correctement.</p>
+
+<p>Et en refaisant tout, j'ai commencé à réfléchir à plein de nouvelles optimisations.</p>
+
+<p>Par exemple, mon ADD utilisait maintenant <strong>un transistor de moins</strong> 😭</p>
+
+<p>J'ai aussi totalement repensé le SUB.</p>
+
+<p>Parce qu'entre-temps, j'avais oublié certaines parties de mes anciennes versions.</p>
+
+<p>Mais même si j'avais oublié certains détails, toutes les connaissances et la logique que j'avais acquises étaient toujours dans ma tête.</p>
+
+<p>Du coup, j'ai tout recommencé.</p>
+
+<ul>
+  <li>FULL ADDER ;</li>
+  <li>FULL SUB ;</li>
+  <li>ALU ;</li>
+  <li>décodeurs ;</li>
+  <li>registres avancés ;</li>
+  <li>clock.</li>
+</ul>
+
+<p>Tout.</p>
+
+<p>Et cette fois… encore plus vite qu'avant.</p>
+
+<p>J'ai même réussi à intégrer ma propre ISA.</p>
+
+<p>Et maintenant mon CPU est bientôt terminé 😭🔥</p>
+
+<p>Actuellement il est en phase beta :</p>
+
+<ul>
+  <li>quelques bugs dans l'ALU ;</li>
+  <li>certains mauvais branchements ;</li>
+  <li>quelques corrections restantes.</li>
+</ul>
+
+<p>Mais maintenant, pour la première fois…</p>
+
+<p>je travaille enfin sur mon propre langage de programmation.</p>
+
+<hr>
+
+<h1>🧠 MON ISA</h1>
+
+<p>Et là… vous allez peut-être rire 😭</p>
+
+<p>Parce que pour un CPU 4 bits…</p>
+
+<p>mes instructions font <strong>16 bits</strong> 💀</p>
+
+<p>Oui.<br>
+16 bits.</p>
+
+<p>Mais ce n'est absolument pas au hasard.</p>
+
+<p>J'ai réfléchi à cette architecture pendant la nuit entière avant de faire ce choix.</p>
+
+<p>Le problème, c'est que ma mémoire est statique.</p>
+
+<p>Je ne peux pas décider dynamiquement de sa taille comme sur un vrai système moderne.</p>
+
+<p>Du coup, j'ai préféré créer une ISA plus large et plus confortable dès le début.</p>
+
+<p>Le fonctionnement est simple :</p>
+
+<ul>
+  <li>8 bits pour les données ;</li>
+  <li>8 bits pour les opcodes et le contrôle.</li>
+</ul>
+
+<p>Total :<br>
+<strong>16 bits par instruction.</strong></p>
+
+<hr>
+
+<h1>🧩 Détail des champs</h1>
+
+<table>
+<tr>
+<th>Bits</th>
+<th>Nom</th>
+<th>Description</th>
+</tr>
+
+<tr>
+<td>0 - 1</td>
+<td>Sélecteur</td>
+<td><code>01 = ALU</code>, <code>10 = Mémoire</code></td>
+</tr>
+
+<tr>
+<td>2 - 4</td>
+<td>Décodeur</td>
+<td>Pour l'ALU : opération. Pour la mémoire : registre destination.</td>
+</tr>
+
+<tr>
+<td>5</td>
+<td>Action FINISH</td>
+<td><code>1 = Écraser la donnée du registre</code></td>
+</tr>
+
+<tr>
+<td>6 - 7</td>
+<td>Réservé</td>
+<td>Debug futur ou extensions.</td>
+</tr>
+
+<tr>
+<td>8 - 11</td>
+<td>Opérande 1</td>
+<td>Premier nombre (4 bits).</td>
+</tr>
+
+<tr>
+<td>12 - 15</td>
+<td>Opérande 2</td>
+<td>Deuxième nombre (4 bits).</td>
+</tr>
+</table>
+
+<hr>
+
+<h1>⚡ Opérations ALU (Sélecteur = 01)</h1>
+
+<table>
+<tr>
+<th>Code</th>
+<th>Opération</th>
+</tr>
+
+<tr>
+<td>000</td>
+<td>ADD</td>
+</tr>
+
+<tr>
+<td>100</td>
+<td>SUB</td>
+</tr>
+
+<tr>
+<td>010</td>
+<td>OR</td>
+</tr>
+
+<tr>
+<td>110</td>
+<td>AND</td>
+</tr>
+
+<tr>
+<td>001</td>
+<td>XOR</td>
+</tr>
+</table>
+
+<hr>
+
+<h1>💾 Opérations Mémoire / Registres (Sélecteur = 10)</h1>
+
+<table>
+<tr>
+<th>Code</th>
+<th>Action</th>
+</tr>
+
+<tr>
+<td>000</td>
+<td>Stocker dans R1</td>
+</tr>
+
+<tr>
+<td>001</td>
+<td>Stocker dans R2</td>
+</tr>
+
+<tr>
+<td>010</td>
+<td>Stocker dans R3</td>
+</tr>
+
+<tr>
+<td>011</td>
+<td>Stocker dans R4</td>
+</tr>
+</table>
+
+<hr>
+
+<h1>🎯 Exemple d'instruction</h1>
+
+<p>Exemple pour stocker <code>5 + 3</code> dans <code>R1</code> :</p>
+
+<pre><code>Sélecteur  Décodeur  FINISH  Réservé  Opérande1  Opérande2
+   01        000        1       00       0101       0011
+</code></pre>
+
+<p>Résultat binaire :</p>
+
+<pre><code>0100010010100011</code></pre>
+
+<p>Et pour une addition simple :</p>
+
+<pre><code>0100000000000000</code></pre>
+
+<p>Voilà 😭<br>
+Très simple… en apparence.</p>
+```
+
 
 // ============================================================
 // DATA — DOWNLOADS
