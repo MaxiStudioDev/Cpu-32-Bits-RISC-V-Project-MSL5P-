@@ -1,5 +1,8 @@
 # Cpu-32-Bits-RISC-V-Project-MSL5P-
 
+Visiter Mon Portfolio ET METTER F11 pour avoir ma meuilleur experience !
+sa me fera vrement plaisir :) 😉 !
+
 Projet Retarder suit a une migration vere Archlinux (Hyprland),
 J'ai sauvgarder le mauvait fichier et J'ai TOUS perdu TOUS sauf les feuille mais sinon TOUS PERDU 😭
 Ducoup J'ai decider de changer un peut le processe je commencerait par du 4bits Pour etre sur que sa fontionne mon architecture
