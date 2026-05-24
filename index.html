@@ -1982,750 +1982,195 @@ const PROJECTS = [
     tags: [
       { label: "Architecture CPU", color: "#f59e0b" },
       { label: "Logique numérique", color: "#ef4444" },
-      { label: "RISC-V", color: "#22c55e" },
       { label: "Rust", color: "#f97316" },
       { label: "From Scratch", color: "#7c3aed" }
     ],
-
-    desc: "Création complète d’un CPU custom inspiré RISC-V. ALU, ISA, registres, logique numérique, câblage, architecture scalable et langage de programmation personnel.",
-
+    desc: "Conception d'un processeur 32-bits de A à Z. Architecture, jeu d'instructions, ALU, tout créé depuis ma tête. Aucune copie.",
     heroEmoji: "🧠",
 
     cardImages: [
       { emoji: "🧠", label: "Architecture CPU" },
       { emoji: "📐", label: "ISA Design" },
-      { emoji: "⚡", label: "ALU Logic" },
-      { emoji: "🔌", label: "Circuit Wiring" },
+      { emoji: "⚡", label: "Logique ALU" }
     ],
 
     links: [
-  {
-    label: "🌐 Voir le projet GitHub",
-    icon: "🚀",
-    href: "https://github.com/MaxiStudioDev/Cpu-32-Bits-Project-MSL5P",
-    style: `
-      background: linear-gradient(135deg,#111827,#1f2937);
-      color: white;
-      padding: 12px 18px;
-      border-radius: 14px;
-      text-decoration: none;
-      font-weight: 700;
-      border: 1px solid rgba(255,255,255,0.08);
-      box-shadow: 0 0 20px rgba(0,0,0,0.25);
-      transition: all .25s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-    `
-  },
-  {
-    label: "📂 Télécharger le fichier CPU.acp",
-    icon: "🧠",
-    href: "https://raw.githubusercontent.com/MaxiStudioDev/Cpu-32-Bits-Project-MSL5P/refs/heads/main/CPU.acp",
-    style: `
-      background: linear-gradient(135deg,#7c3aed,#4f46e5);
-      color: white;
-      padding: 12px 18px;
-      border-radius: 14px;
-      text-decoration: none;
-      font-weight: 700;
-      border: 1px solid rgba(255,255,255,0.08);
-      box-shadow: 0 0 20px rgba(124,58,237,0.35);
-      transition: all .25s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-    `
-  }
-],
+      {
+        label: "🚀 GitHub du projet",
+        icon: "📁",
+        href: "https://github.com/MaxiStudioDev/Cpu-32-Bits-Project-MSL5P",
+        style: `
+          background: linear-gradient(135deg,#111827,#1f2937);
+          color: white;
+          padding: 12px 18px;
+          border-radius: 14px;
+          text-decoration: none;
+          font-weight: 700;
+          border: 1px solid rgba(255,255,255,0.08);
+          display: inline-flex;
+          gap: 10px;
+          align-items: center;
+        `
+      },
+      {
+        label: "📂 CPU.acp (fichier)",
+        icon: "🧠",
+        href: "https://raw.githubusercontent.com/MaxiStudioDev/Cpu-32-Bits-Project-MSL5P/refs/heads/main/CPU.acp",
+        style: `
+          background: linear-gradient(135deg,#7c3aed,#4f46e5);
+          color: white;
+          padding: 12px 18px;
+          border-radius: 14px;
+          text-decoration: none;
+          font-weight: 700;
+          border: 1px solid rgba(255,255,255,0.08);
+          display: inline-flex;
+          gap: 10px;
+          align-items: center;
+        `
+      }
+    ],
 
     editorContent: `
-
-<div style="padding:20px;border-radius:18px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);">
-
-<h1>🧠 Cpu-32-Bits-RISC-V-Project-MSL5P</h1>
-
-<p>
-Projet retardé suite à une migration vers <strong>Arch Linux + Hyprland</strong>.
-J'ai sauvegardé les mauvais fichiers et j'ai absolument tout perdu 😭
-</p>
-
-<p>
-Du coup, j'ai décidé de recommencer plus intelligemment :
-commencer en <strong>4 bits</strong> pour valider toute l'architecture,
-puis refaire ensuite le <strong>32 bits complet</strong>.
-</p>
-
-<hr>
-
-<h1>⚠️ Important</h1>
-
-<div style="padding:18px;border-radius:16px;background:rgba(255,165,0,0.08);border:1px solid rgba(255,165,0,0.2);">
-
-<p>
-⚠️ <strong>Texte corrigé par IA</strong> (car mon niveau en français est encore limité 😭)
-</p>
-
-<p>
-📝 Tous les choix techniques, la logique, l'architecture, les idées et le design du CPU sont entièrement faits par moi.
-</p>
-
-<p>
-L'IA a uniquement corrigé :
-</p>
-
-<ul>
-<li>l'orthographe ;</li>
-<li>la formulation ;</li>
-<li>la lisibilité du portfolio.</li>
-</ul>
-
-<p>
-Le projet reste <strong>100% le mien</strong>.
-</p>
-
-</div>
-
-<hr>
-
-<h1>🛠️ Logiciel utilisé</h1>
-
-<p>
-J'utilise le logiciel :
-</p>
-
-<div style="margin-top:18px;margin-bottom:18px;">
-<a 
-href="https://antarescircuit.io/" 
-target="_blank"
-style="
-display:inline-block;
-padding:14px 22px;
-border-radius:14px;
-background:linear-gradient(135deg,#7c3aed,#2563eb);
-color:white;
-font-weight:bold;
-text-decoration:none;
-box-shadow:0 0 20px rgba(124,58,237,0.4);
-transition:0.2s;
-">
-⚡ Ouvrir Antares Circuit
-</a>
-</div>
-
-<p>
-C'est ici que je réalise tous mes circuits numériques.
-</p>
-
-<hr>
-
-<h1>👤 Informations</h1>
-
-<table style="width:100%;border-collapse:collapse;margin-top:20px;">
-<tr style="background:rgba(255,255,255,0.06);">
-<th style="padding:12px;border:1px solid rgba(255,255,255,0.1);">Élément</th>
-<th style="padding:12px;border:1px solid rgba(255,255,255,0.1);">Information</th>
-</tr>
-
-<tr>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">Âge</td>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">13 ans</td>
-</tr>
-
-<tr>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">Temps de développement</td>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">6 à 7 jours</td>
-</tr>
-
-<tr>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">Temps quotidien</td>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">1h à 6h par jour</td>
-</tr>
-
-<tr>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">Méthode</td>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">
-Je cherche toujours seul pendant plusieurs jours avant de regarder des méthodes existantes.
-</td>
-</tr>
-
-<tr>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">Passion</td>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">
-Passionné d'électronique et de logique depuis environ 5 ans.
-</td>
-</tr>
-
-</table>
-
-<hr>
-
-<h1>🌍 Open Source</h1>
-
-<p>
-Le projet deviendra bientôt entièrement <strong>Open Source</strong>.
-</p>
-
-<p>
-Je laisse volontairement certaines erreurs dans les anciennes versions afin que d'autres personnes puissent apprendre de mon évolution.
-</p>
-
-<div style="margin-top:20px;margin-bottom:20px;">
-
-<a 
-href="https://github.com/MaxiStudioDev/Cpu-32-Bits-Project-MSL5P-" 
-target="_blank"
-style="
-display:inline-block;
-padding:14px 22px;
-border-radius:14px;
-background:linear-gradient(135deg,#111827,#374151);
-color:white;
-font-weight:bold;
-text-decoration:none;
-margin-right:12px;
-box-shadow:0 0 18px rgba(0,0,0,0.35);
-">
-🌍 Voir le GitHub
-</a>
-
-<a 
-href="https://raw.githubusercontent.com/MaxiStudioDev/Cpu-32-Bits-Project-MSL5P/refs/heads/main/CPU.acp" 
-target="_blank"
-style="
-display:inline-block;
-padding:14px 22px;
-border-radius:14px;
-background:linear-gradient(135deg,#2563eb,#06b6d4);
-color:white;
-font-weight:bold;
-text-decoration:none;
-box-shadow:0 0 18px rgba(37,99,235,0.35);
-">
-⬇️ Télécharger CPU.acp
-</a>
-
-</div>
-
-<hr>
-
-<h1>🎯 Le Projet</h1>
-
-<p>
-Mon but est de créer un CPU entièrement conçu par moi-même.
-</p>
-
-<p>
-Je ne copie personne.
-Je crée toute l'architecture avec ma propre logique.
-</p>
-
-<p>
-Depuis longtemps, je suis fasciné par le fonctionnement réel des ordinateurs.
-</p>
-
-<p>
-Au lieu d'utiliser simplement des programmes,
-j'aime comprendre comment une machine fonctionne à l'intérieur.
-</p>
-
-<hr>
-
-<h1>⚡ ALU — Le commencement</h1>
-
-<p>
-J'ai commencé par l'ALU (<em>Arithmetic Logic Unit</em>),
-car c'était déjà un domaine que je maîtrisais relativement bien.
-</p>
-
-<p>
-Vers mes 12 ans, j'avais déjà créé une calculatrice 8 bits sur Minecraft avec uniquement de la Redstone et des FULL ADDER.
-</p>
-
-<hr>
-
-<h1>🧠 Réflexion et conception</h1>
-
-<p>
-Au début, je faisais énormément de schémas sur papier pendant les temps morts en cours.
-</p>
-
-<p>
-Je réfléchissais directement aux additions binaires :
-</p>
-
-<table style="width:100%;border-collapse:collapse;margin-top:20px;">
-<tr style="background:rgba(255,255,255,0.06);">
-<th style="padding:12px;border:1px solid rgba(255,255,255,0.1);">Addition</th>
-<th style="padding:12px;border:1px solid rgba(255,255,255,0.1);">Résultat</th>
-</tr>
-
-<tr>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">1 + 1</td>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">10</td>
-</tr>
-
-<tr>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">1 + 0</td>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">1</td>
-</tr>
-
-</table>
-
-<p>
-J'ai donc compris qu'une retenue devait être générée lorsque les deux entrées valent 1.
-</p>
-
-<p>
-J'ai alors utilisé une porte logique AND pour gérer cette retenue.
-</p>
-
-<hr>
-
-<h1>🚀 FULL ADDER</h1>
-
-<p>
-Ensuite je suis passé au FULL ADDER afin de gérer :
-</p>
-
-<ul>
-<li>les deux bits d'entrée ;</li>
-<li>la retenue précédente ;</li>
-<li>les additions multi-bits.</li>
-</ul>
-
-<hr>
-
-<h1>💀 Le SUB — Le début des problèmes</h1>
-
-<p>
-Puis je suis passé au SUB...
-et là les vrais problèmes ont commencé 😭
-</p>
-
-<table style="width:100%;border-collapse:collapse;margin-top:20px;">
-
-<tr style="background:rgba(255,255,255,0.06);">
-<th style="padding:12px;border:1px solid rgba(255,255,255,0.1);">Solution</th>
-<th style="padding:12px;border:1px solid rgba(255,255,255,0.1);">Description</th>
-</tr>
-
-<tr>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">A + (!B)</td>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">
-Méthode classique utilisée dans beaucoup de processeurs.
-</td>
-</tr>
-
-<tr>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">Créer mon propre SUB</td>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">
-La solution que j'ai finalement choisie 😭
-</td>
-</tr>
-
-</table>
-
-<hr>
-
-<h1>🐛 Les bugs</h1>
-
-<p>
-Après énormément de travail, mon FULL SUB semblait fonctionner.
-Puis deux énormes bugs sont apparus :
-</p>
-
-<ul>
-<li>certaines opérations négatives donnaient des résultats faux ;</li>
-<li>la gestion des emprunts binaires n'était pas stable.</li>
-</ul>
-
-<p>
-À ce moment-là, j'étais proche d'abandonner.
-</p>
-
-<hr>
-
-<h1>🔥 Le déclic</h1>
-
-<p>
-J'ai fait une pause de 2 jours.
-Puis un matin...
-énorme déclic.
-</p>
-
-<p>
-J'ai entièrement repris ma logique du FULL ADDER.
-</p>
-
-<p>
-C'est comme ça qu'est née la V3 stable.
-</p>
-
-<p>
-Ensuite j'ai créé une version expérimentale du SUB utilisant...
-<strong>9 XOR 😭</strong>
-</p>
-
-<hr>
-
-<h1>⚡ La vraie solution</h1>
-
-<p>
-Finalement, j'ai retesté :
-</p>
-
-<pre>
-A + (-B)
-</pre>
-
-<p>
-Et après avoir reconstruit la logique autrement...
-tout a fonctionné.
-</p>
-
-<hr>
-
-<h1>🚀 Architecture scalable</h1>
-
-<p>
-Une fois le problème réglé :
-</p>
-
-<ul>
-<li>ALU 4 bits ;</li>
-<li>ALU 8 bits ;</li>
-<li>ALU 16 bits.</li>
-</ul>
-
-<p>
-Le tout en environ 10 minutes.
-</p>
-
-<p>
-Parce que toute mon architecture était pensée comme un système modulaire.
-</p>
-
-<hr>
-
-<h1>💀 Le calvaire des câbles</h1>
-
-<p>
-J'ai dû relier des centaines de connexions à la main 😭
-</p>
-
-<table style="width:100%;border-collapse:collapse;margin-top:20px;">
-
-<tr style="background:rgba(255,255,255,0.06);">
-<th style="padding:12px;border:1px solid rgba(255,255,255,0.1);">Module</th>
-<th style="padding:12px;border:1px solid rgba(255,255,255,0.1);">Entrées</th>
-</tr>
-
-<tr>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">ADD/SUB</td>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">66</td>
-</tr>
-
-<tr>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">XOR</td>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">64</td>
-</tr>
-
-<tr>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">AND</td>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">64</td>
-</tr>
-
-<tr>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">OR</td>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">64</td>
-</tr>
-
-</table>
-
-<hr>
-
 <h1>🌍 La migration — La catastrophe</h1>
 
-<p>
-Un jour, Windows a commencé à vraiment me fatiguer :
-</p>
+<p>Un jour, je me suis réveillé et Windows commençait vraiment à me fatiguer :</p>
 
 <ul>
-<li>lenteurs ;</li>
-<li>bugs ;</li>
-<li>système lourd ;</li>
-<li>problèmes constants.</li>
+<li>lenteurs</li>
+<li>bugs</li>
+<li>système lourd</li>
+<li>instabilité</li>
 </ul>
 
-<p>
-Du coup j'ai décidé de migrer vers Linux.
-</p>
+<p>Du coup j’ai migré vers Linux (Arch + Hyprland).</p>
 
-<p>
-Je suis parti sur :
-<strong>Arch Linux + Hyprland</strong>
-</p>
-
-<p>
-Mais mon PC possède un CPU Gemini Lake avec un ancien écran 😭
-</p>
-
-<p>
-Résultat :
-</p>
-
+<p>Mais mon matériel (Gemini Lake + écran ancien) a créé :</p>
 <ul>
-<li>problèmes d'affichage ;</li>
-<li>drivers ;</li>
-<li>écran qui bug ;</li>
-<li>système instable.</li>
+<li>bugs d’affichage</li>
+<li>drivers cassés</li>
+<li>écran instable</li>
 </ul>
 
-<p>
-Et pendant cette migration...
-j'ai sauvegardé les mauvais fichiers 💀
-</p>
+<p>Après correction de tout ça… j’ai fait une erreur fatale :</p>
 
-<p>
-J'ai tout perdu.
-</p>
+<h2>💀 J’ai sauvegardé les mauvais fichiers</h2>
+
+<p><strong>Résultat :</strong></p>
+
+<table>
+<tr><td>CPU</td><td>❌ perdu</td></tr>
+<tr><td>ALU</td><td>❌ perdu</td></tr>
+<tr><td>Registres</td><td>❌ perdu</td></tr>
+<tr><td>ISA</td><td>❌ perdu</td></tr>
+<tr><td>Tests</td><td>❌ perdu</td></tr>
+</table>
+
+<p>Seuls les schémas papier restent.</p>
 
 <hr>
 
 <h1>😵 Moment de fatigue</h1>
 
-<p>
-À ce moment-là, j'étais vraiment au bord d'abandonner.
-</p>
+<p>J’étais au bord de l’abandon.</p>
 
-<p>
-J'avais déjà investi environ 16 heures dans le projet.
-</p>
+<p>Environ <strong>16h de travail perdues</strong>.</p>
 
-<p>
-J'ai essayé plusieurs méthodes de récupération.
-Impossible.
-</p>
+<p>J’ai essayé de récupérer → impossible.</p>
 
-<p>
-Du coup j'ai préféré faire une pause d'une journée.
-</p>
+<p>Donc j’ai décidé de :</p>
+
+<blockquote>faire une pause de 1 jour pour éviter une mauvaise décision</blockquote>
 
 <hr>
 
 <h1>🔥 Moment incroyable</h1>
 
-<p>
-Puis un matin...
-je me suis réveillé et j'ai repris mes feuilles.
-</p>
+<p>Le lendemain, j’ai repris tout depuis les feuilles papier.</p>
 
-<p>
-J'ai recommencé toute l'architecture en 4 bits.
-</p>
-
-<p>
-Et là :
-</p>
+<p>Et là :</p>
 
 <ul>
-<li>nouvel ADD optimisé ;</li>
-<li>SUB reconstruit ;</li>
-<li>FULL ADDER ;</li>
-<li>FULL SUB ;</li>
-<li>ALU ;</li>
-<li>décodeurs ;</li>
-<li>registres ;</li>
-<li>clock ;</li>
-<li>ISA personnelle.</li>
+<li>ALU simplifiée</li>
+<li>SUB entièrement refait</li>
+<li>ADD optimisé (1 transistor en moins 😭)</li>
+<li>architecture revue</li>
 </ul>
 
-<p>
-Et maintenant le CPU est bientôt terminé 😭🔥
-</p>
+<p>J’ai tout reconstruit :</p>
+
+<ul>
+<li>FULL ADDER</li>
+<li>FULL SUB</li>
+<li>ALU</li>
+<li>décodeurs</li>
+<li>registres</li>
+<li>clock</li>
+</ul>
 
 <hr>
 
 <h1>🧠 MON ISA</h1>
 
-<p>
-Pour un CPU 4 bits...
-mes instructions font 16 bits 😭
-</p>
+<p>CPU 4 bits mais instructions 16 bits 😭</p>
 
-<p>
-Oui.
-16 bits.
-</p>
+<p>Architecture :</p>
 
-<p>
-Mais ce choix n'est pas aléatoire.
-</p>
-
-<p>
-J'ai préféré créer une ISA plus confortable dès le début.
-</p>
-
-<table style="width:100%;border-collapse:collapse;margin-top:20px;">
-
-<tr style="background:rgba(255,255,255,0.06);">
-<th style="padding:12px;border:1px solid rgba(255,255,255,0.1);">Partie</th>
-<th style="padding:12px;border:1px solid rgba(255,255,255,0.1);">Bits</th>
-</tr>
-
-<tr>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">Data</td>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">8 bits</td>
-</tr>
-
-<tr>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">Opcode / contrôle</td>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">8 bits</td>
-</tr>
-
+<table>
+<tr><td>Bits</td><td>Usage</td></tr>
+<tr><td>0-1</td><td>Sélecteur (ALU / Mémoire)</td></tr>
+<tr><td>2-4</td><td>Opcode</td></tr>
+<tr><td>5</td><td>WRITE</td></tr>
+<tr><td>6-7</td><td>Réservé</td></tr>
+<tr><td>8-11</td><td>Op1</td></tr>
+<tr><td>12-15</td><td>Op2</td></tr>
 </table>
 
 <hr>
 
-<h1>🧩 Détail des champs</h1>
+<h1>⚡ ALU Ops</h1>
 
-<table style="width:100%;border-collapse:collapse;margin-top:20px;">
-
-<tr style="background:rgba(255,255,255,0.06);">
-<th style="padding:12px;border:1px solid rgba(255,255,255,0.1);">Bits</th>
-<th style="padding:12px;border:1px solid rgba(255,255,255,0.1);">Nom</th>
-<th style="padding:12px;border:1px solid rgba(255,255,255,0.1);">Description</th>
-</tr>
-
-<tr>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">0 - 1</td>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">Sélecteur</td>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">01 = ALU / 10 = Mémoire</td>
-</tr>
-
-<tr>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">2 - 4</td>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">Décodeur</td>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">Choix opération ou registre</td>
-</tr>
-
-<tr>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">5</td>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">FINISH</td>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">Écraser registre</td>
-</tr>
-
-<tr>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">6 - 7</td>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">Réservé</td>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">Debug futur</td>
-</tr>
-
-<tr>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">8 - 11</td>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">Opérande 1</td>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">Premier nombre</td>
-</tr>
-
-<tr>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">12 - 15</td>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">Opérande 2</td>
-<td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">Deuxième nombre</td>
-</tr>
-
+<table>
+<tr><td>000</td><td>ADD</td></tr>
+<tr><td>100</td><td>SUB</td></tr>
+<tr><td>010</td><td>OR</td></tr>
+<tr><td>110</td><td>AND</td></tr>
+<tr><td>001</td><td>XOR</td></tr>
 </table>
 
 <hr>
 
-<h1>⚡ Opérations ALU</h1>
+<h1>💾 Mémoire</h1>
 
-<table style="width:100%;border-collapse:collapse;margin-top:20px;">
-
-<tr style="background:rgba(255,255,255,0.06);">
-<th style="padding:12px;border:1px solid rgba(255,255,255,0.1);">Code</th>
-<th style="padding:12px;border:1px solid rgba(255,255,255,0.1);">Opération</th>
-</tr>
-
-<tr><td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">000</td><td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">ADD</td></tr>
-<tr><td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">100</td><td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">SUB</td></tr>
-<tr><td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">010</td><td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">OR</td></tr>
-<tr><td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">110</td><td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">AND</td></tr>
-<tr><td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">001</td><td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">XOR</td></tr>
-
+<table>
+<tr><td>000</td><td>R1</td></tr>
+<tr><td>001</td><td>R2</td></tr>
+<tr><td>010</td><td>R3</td></tr>
+<tr><td>011</td><td>R4</td></tr>
 </table>
 
 <hr>
 
-<h1>💾 Opérations mémoire</h1>
+<h1>🎯 Exemple</h1>
 
-<table style="width:100%;border-collapse:collapse;margin-top:20px;">
-
-<tr style="background:rgba(255,255,255,0.06);">
-<th style="padding:12px;border:1px solid rgba(255,255,255,0.1);">Code</th>
-<th style="padding:12px;border:1px solid rgba(255,255,255,0.1);">Action</th>
-</tr>
-
-<tr><td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">000</td><td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">Stocker dans R1</td></tr>
-<tr><td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">001</td><td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">Stocker dans R2</td></tr>
-<tr><td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">010</td><td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">Stocker dans R3</td></tr>
-<tr><td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">011</td><td style="padding:12px;border:1px solid rgba(255,255,255,0.08);">Stocker dans R4</td></tr>
-
-</table>
-
-<hr>
-
-<h1>🎯 Exemple d'instruction</h1>
-
-<p>
-Exemple :
-stocker <strong>5 + 3</strong> dans <strong>R1</strong>
-</p>
+<p><code>5 + 3 → R1</code></p>
 
 <pre>
-Sélecteur  Décodeur  FINISH  Réservé  Opérande1  Opérande2
-01         000       1       00       0101       0011
-</pre>
-
-<p>
-Résultat :
-</p>
-
-<pre>
-0100010010100011
-</pre>
-
-<p>
-Addition simple :
-</p>
-
-<pre>
-0100000000000000
+01 000 1 00 0101 0011
+= 0100010010100011
 </pre>
 
 <hr>
+
+<h1>⏳ LIENS</h1>
+
+<p>
+<a href="https://github.com/MaxiStudioDev/Cpu-32-Bits-Project-MSL5P" target="_blank">🚀 Ouvrir GitHub</a><br>
+<a href="https://raw.githubusercontent.com/MaxiStudioDev/Cpu-32-Bits-Project-MSL5P/refs/heads/main/CPU.acp" target="_blank">📂 Télécharger CPU.acp</a>
+</p>
 
 <h1>⏳ À SUIVRE...</h1>
-
-<p>
-Le CPU est actuellement en phase beta.
-</p>
-
-<p>
-Je travaille maintenant sur :
-</p>
-
-<ul>
-<li>la correction des derniers bugs ;</li>
-<li>la stabilisation de l'ALU ;</li>
-<li>les optimisations ;</li>
-<li>mon propre langage de programmation ;</li>
-<li>la future version 32 bits complète.</li>
-</ul>
-
-</div>
-
-`
+    `
   }
 ];
 
