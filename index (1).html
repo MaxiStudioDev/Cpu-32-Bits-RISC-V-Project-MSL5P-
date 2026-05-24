@@ -1,0 +1,2086 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-screen overflow-hidden">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ilyess | Architecture Hardware & Logiciel | Portfolio</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        obsidian: '#050507',
+                        cardbg: '#0c0c0e',
+                        bordercolor: '#16161e',
+                        accentgreen: '#22c55e', // Green for GDScript and general logic
+                        accentrust: '#f97316',  // Rust Orange
+                        accentcyan: '#06b6d4',  // Cyan for Hardware / Architecture
+                        accentpurple: '#7c3aed' // Purple for From Scratch / Security
+                    },
+                    fontFamily: {
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #050507;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1a1a26;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #22c55e;
+        }
+
+        /* Scanline effect for terminal feel */
+        .scanlines {
+            position: relative;
+            overflow: hidden;
+        }
+        .scanlines::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            z-index: 2;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+
+        /* Hyprland active border glow */
+        .hypr-active-border {
+            position: relative;
+            border-radius: 8px;
+            background: linear-gradient(90deg, #22c55e, #06b6d4, #7c3aed, #f97316);
+            background-size: 300% 300%;
+            animation: gradient-flow 10s ease infinite;
+            padding: 1px;
+        }
+        @keyframes gradient-flow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Matrix digital rain simulation background */
+        #matrix-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.03;
+            pointer-events: none;
+        }
+
+        /* Smooth fluid transition animations */
+        .page-fade-in {
+            animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Custom pulsing glow */
+        .glow-pulse {
+            animation: glowPulse 2s ease-in-out infinite alternate;
+        }
+        @keyframes glowPulse {
+            0% { box-shadow: 0 0 4px rgba(34, 197, 94, 0.2); }
+            100% { box-shadow: 0 0 12px rgba(34, 197, 94, 0.5); }
+        }
+
+        /* Glassmorphism panel */
+        .glass-panel {
+            background: rgba(12, 12, 14, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        /* Sidebar file tree active styles */
+        .file-item {
+            transition: all 0.15s ease;
+        }
+        .file-item.active {
+            background: rgba(34, 197, 94, 0.08);
+            border-left: 3px solid #22c55e;
+            color: #ffffff;
+            padding-left: 10px;
+        }
+
+        /* Semi fullscreen state class */
+        .semi-fullscreen-active {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            z-index: 9999 !important;
+            border-radius: 0px !important;
+            background: #050507 !important;
+        }
+    </style>
+</head>
+<body class="bg-obsidian text-zinc-100 font-sans h-screen overflow-hidden relative selection:bg-accentgreen selection:text-black">
+
+    <!-- Matrix rain background -->
+    <canvas id="matrix-canvas"></canvas>
+
+    <!-- AUDIO & GODOT EASTER EGG FLOATING CONTROLS -->
+    <div class="fixed bottom-4 right-4 z-50 flex items-center gap-2">
+        <button onclick="toggleAudioSystem()" id="sound-btn" class="glass-panel p-2.5 rounded-lg border border-zinc-800 text-zinc-400 hover:text-accentgreen hover:border-accentgreen/30 transition-all flex items-center gap-2 text-xs font-mono shadow-lg">
+            <i data-lucide="volume-2" class="w-4 h-4"></i>
+            <span>FX: ON</span>
+        </button>
+        <button onclick="triggerGodotOverdrive()" id="godot-overdrive-btn" class="glass-panel p-2.5 rounded-lg border border-zinc-800 text-zinc-400 hover:text-cyan-400 hover:border-cyan-400/30 transition-all flex items-center gap-2 text-xs font-mono shadow-lg">
+            <span class="inline-block animate-bounce">🤖</span>
+            <span>GD_OVERDRIVE</span>
+        </button>
+    </div>
+
+    <!-- MAIN STATUS BAR (Exactly matching viewport grid) -->
+    <header class="h-12 w-full px-4 bg-obsidian/90 backdrop-filter backdrop-blur-md border-b border-zinc-900/90 font-mono text-xs flex items-center shrink-0 z-40">
+        <div class="w-full mx-auto flex flex-col md:flex-row items-center justify-between gap-1.5 md:gap-0">
+            <!-- Left: Workspaces -->
+            <div class="flex items-center gap-2.5">
+                <span class="font-bold text-accentgreen flex items-center gap-1.5 mr-2">
+                    <span class="w-2 h-2 rounded-full bg-accentgreen inline-block glow-pulse"></span>
+                    ilyess@archlinux: ~
+                </span>
+                <div class="flex items-center gap-1 bg-zinc-950 px-2 py-0.5 rounded border border-zinc-900">
+                    <button onclick="switchTab('about')" class="tab-btn px-2 py-0.5 rounded text-accentgreen bg-zinc-900/80 hover:text-zinc-100 transition-all" id="tab-about">1: Accueil</button>
+                    <button onclick="switchTab('projects')" class="tab-btn px-2 py-0.5 rounded text-zinc-400 hover:text-zinc-100 transition-all" id="tab-projects">2: Projet_32bit</button>
+                    <button onclick="switchTab('sim')" class="tab-btn px-2 py-0.5 rounded text-zinc-400 hover:text-zinc-100 transition-all" id="tab-sim">3: Simulateur_ISA</button>
+                    <button onclick="switchTab('skills')" class="tab-btn px-2 py-0.5 rounded text-zinc-400 hover:text-zinc-100 transition-all" id="tab-skills">4: Compétences</button>
+                </div>
+            </div>
+
+            <!-- Middle: Window Title -->
+            <div class="hidden lg:flex items-center gap-2 text-zinc-400 bg-zinc-950/60 px-3 py-1 rounded border border-zinc-900">
+                <i data-lucide="terminal" class="w-3.5 h-3.5 text-accentgreen"></i>
+                <span id="active-window-title" class="truncate max-w-xs text-zinc-300">hyprland: welcome_node.sh</span>
+            </div>
+
+            <!-- Right: Stats & Ticking Time -->
+            <div class="flex items-center gap-3 text-zinc-400">
+                <div class="flex items-center gap-1.5 bg-zinc-950/60 px-2 py-0.5 rounded border border-zinc-900">
+                    <span class="text-accentrust">RUST</span>
+                    <span class="w-1 h-1 rounded-full bg-accentrust inline-block"></span>
+                    <span class="text-[9px] text-zinc-500">v1.78</span>
+                </div>
+                <div class="flex items-center gap-1.5 bg-zinc-950/60 px-2 py-0.5 rounded border border-zinc-900">
+                    <span class="text-cyan-400">GD</span>
+                    <span class="w-1 h-1 rounded-full bg-cyan-400 inline-block"></span>
+                    <span class="text-[9px] text-zinc-500">v4.x</span>
+                </div>
+                <div class="flex items-center gap-1">
+                    <i data-lucide="cpu" class="w-3.5 h-3.5 text-accentcyan"></i>
+                    <span id="cpu-stat" class="text-zinc-300">11%</span>
+                </div>
+                <div class="border-l border-zinc-800 pl-3 flex items-center gap-1">
+                    <i data-lucide="clock" class="w-3.5 h-3.5 text-zinc-500"></i>
+                    <span id="system-time">13:37:00</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTENT DISPLAY PANELS FILLING THE REST OF VIEWPORT HEIGHT -->
+    <main class="h-[calc(100vh-48px)] w-full max-w-7xl mx-auto p-4 md:p-6 overflow-hidden relative z-10">
+
+        <!-- ========================================== -->
+        <!-- WORKSPACE SECTION 1: HOME/ABOUT -->
+        <!-- ========================================== -->
+        <section id="section-about" class="tab-content page-fade-in block h-full flex flex-col gap-6">
+            
+            <!-- Hero Layout Tiling (No Scroll, Fits perfectly) -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 flex-1 min-h-0">
+                
+                <!-- Left Block -->
+                <div class="lg:col-span-7 rounded-xl glass-panel p-5 border border-zinc-900 flex flex-col justify-between relative overflow-hidden group hover:border-accentgreen/10 transition-all duration-300">
+                    <div class="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:20px_20px] opacity-5 pointer-events-none"></div>
+                    
+                    <div class="relative z-10 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-2.5 h-2.5 rounded-full bg-red-500/80 inline-block"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-yellow-500/80 inline-block"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-green-500/80 inline-block"></span>
+                            </div>
+                            <span class="font-mono text-[9px] bg-zinc-900 text-zinc-500 px-2 py-0.5 rounded uppercase tracking-wider">IlyessOS v1.13</span>
+                        </div>
+
+                        <div class="space-y-2">
+                            <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-accentgreen/10 text-accentgreen font-mono text-[10px] border border-accentgreen/20">
+                                <span class="w-1 h-1 rounded-full bg-accentgreen animate-ping"></span>
+                                ARCHITECTE RUST & HARDWARE
+                            </div>
+                            <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-white">
+                                Salut, je m'appelle <span class="text-transparent bg-clip-text bg-gradient-to-r from-accentgreen via-accentcyan to-accentrust">Ilyess</span>
+                            </h1>
+                            <p class="text-zinc-400 font-mono text-xs md:text-sm max-w-xl">
+                                J'ai <span class="text-zinc-100 font-bold underline decoration-accentgreen">13 ans</span>. Je conçois des processeurs de A à Z, je maîtrise la logique numérique, et je développe des outils système en Rust et des moteurs de jeux en GDScript.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Compact Data Box -->
+                    <div class="font-mono text-[11px] text-zinc-400 space-y-1 bg-zinc-950/60 p-4 rounded-lg border border-zinc-900">
+                        <p class="text-accentcyan"><span class="text-zinc-600">&gt;</span> const bio_data = {</p>
+                        <p class="pl-4">age: 13,</p>
+                        <p class="pl-4">passion: "Comprendre et construire la machine de A à Z",</p>
+                        <p class="pl-4">environnement: "Arch Linux + Hyprland WM",</p>
+                        <p class="pl-4">logique: "1000% (De A à Z)"</p>
+                        <p class="text-accentcyan">};</p>
+                    </div>
+                </div>
+
+                <!-- Right Block: Terminal Stream -->
+                <div class="lg:col-span-5 rounded-xl bg-zinc-950 border border-zinc-900 overflow-hidden relative scanlines flex flex-col min-h-0">
+                    <div class="bg-zinc-900/80 px-4 py-2 border-b border-zinc-950 flex items-center justify-between font-mono text-[10px]">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="terminal" class="w-3.5 h-3.5 text-accentrust"></i>
+                            <span class="text-zinc-300">system_monitor.sh</span>
+                        </div>
+                        <span class="text-zinc-500">TTY1</span>
+                    </div>
+                    
+                    <div class="p-4 font-mono text-xs space-y-2.5 overflow-y-auto flex-1 text-zinc-300" id="terminal-screen">
+                        <div>
+                            <span class="text-zinc-500">[SYS]</span> Initializing core simulation nodes...
+                        </div>
+                        <div>
+                            <span class="text-zinc-500">[SYS]</span> Active layout: <span class="text-accentcyan">Hyprland Custom</span> (Gemini Lake Patched)
+                        </div>
+                        <div>
+                            <span class="text-zinc-500">[SYS]</span> Rust compilations target set to RISC-V 32-bits.
+                        </div>
+                        <div class="text-accentgreen font-bold">
+                            $ cat welcome.txt
+                        </div>
+                        <p class="text-zinc-400 pl-3 leading-relaxed border-l border-zinc-900 text-[11px]">
+                            "Je m'intéresse au fonctionnement profond des ordinateurs depuis l'âge de 5 ans. Rien n'est copié, je fabrique mes propres idées et ma logique."
+                        </p>
+                        <div class="text-accentgreen flex items-center gap-1">
+                            <span>$</span> <span class="text-white inline-block border-r-2 border-accentgreen pr-1 animate-pulse">_</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Numbers (Bento Grid) -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 shrink-0">
+                <div class="glass-panel p-3.5 rounded-xl border border-zinc-900 flex flex-col justify-between">
+                    <span class="text-[9px] font-mono text-zinc-500 uppercase">Âge</span>
+                    <span class="text-xl font-extrabold text-white font-mono">13 Ans</span>
+                    <span class="text-[9px] font-mono text-zinc-500">Bricolage / robotique à 5 ans</span>
+                </div>
+                <div class="glass-panel p-3.5 rounded-xl border border-zinc-900 flex flex-col justify-between">
+                    <span class="text-[9px] font-mono text-zinc-500 uppercase">Rust</span>
+                    <span class="text-xl font-extrabold text-white font-mono text-accentrust">80%</span>
+                    <span class="text-[9px] font-mono text-zinc-500">Tauri, compilateur, RISC-V</span>
+                </div>
+                <div class="glass-panel p-3.5 rounded-xl border border-zinc-900 flex flex-col justify-between">
+                    <span class="text-[9px] font-mono text-zinc-500 uppercase">GDScript</span>
+                    <span class="text-xl font-extrabold text-white font-mono text-cyan-400">1000%</span>
+                    <span class="text-[9px] font-mono text-zinc-500">Logiques & structures de jeu</span>
+                </div>
+                <div class="glass-panel p-3.5 rounded-xl border border-zinc-900 flex flex-col justify-between">
+                    <span class="text-[9px] font-mono text-zinc-500 uppercase">Logique Code</span>
+                    <span class="text-xl font-extrabold text-white font-mono text-accentgreen">1000%</span>
+                    <span class="text-[9px] font-mono text-zinc-500">Conception 100% autonome</span>
+                </div>
+            </div>
+
+            <!-- Quick Access Project Banner -->
+            <div class="p-1 hypr-active-border rounded-xl shrink-0">
+                <div class="bg-cardbg rounded-lg p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl">🧠</span>
+                        <div>
+                            <h3 class="text-sm font-bold text-white">Processeur 32-bits RISC-V & 4-bits Rebirth</h3>
+                            <p class="text-[11px] font-mono text-zinc-500">Explore mon aventure de zéro jusqu'à l'architecture finale</p>
+                        </div>
+                    </div>
+                    <button onclick="switchTab('projects')" class="bg-accentgreen hover:bg-green-600 text-black px-4 py-2 rounded-lg text-xs font-mono font-bold transition-all flex items-center justify-center gap-1.5 shadow-md shrink-0 w-full sm:w-auto">
+                        <i data-lucide="book-open" class="w-3.5 h-3.5"></i> Lire l'Histoire Complète
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ========================================== -->
+        <!-- WORKSPACE SECTION 2: THE CPU PROJECT DOCUMENTATION -->
+        <!-- ========================================== -->
+        <section id="section-projects" class="tab-content page-fade-in hidden h-full flex flex-col gap-4">
+            
+            <!-- Document Reader Action Bar -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
+                <!-- Title & Subtitle -->
+                <div>
+                    <h2 class="text-lg font-extrabold text-white flex items-center gap-2">
+                        <i data-lucide="folder-git" class="text-accentcyan w-5 h-5"></i>
+                        PROJET : CPU RISC-V Custom (MSL5P)
+                    </h2>
+                </div>
+                
+                <!-- DOCUMENT VIEW MODES & FULLSCREEN CONTROLS -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <!-- Mode Selector Toggle -->
+                    <div class="bg-zinc-950 p-1 rounded-lg border border-zinc-900 flex items-center gap-1">
+                        <button onclick="toggleReadingMode('editor')" id="mode-btn-editor" class="px-2.5 py-1 text-[11px] font-mono font-bold rounded bg-zinc-900 text-accentgreen border border-accentgreen/10 transition-all flex items-center gap-1">
+                            <i data-lucide="sidebar" class="w-3 h-3"></i> Mode Éditeur
+                        </button>
+                        <button onclick="toggleReadingMode('full')" id="mode-btn-full" class="px-2.5 py-1 text-[11px] font-mono font-bold rounded text-zinc-400 hover:text-white transition-all flex items-center gap-1">
+                            <i data-lucide="file-text" class="w-3 h-3"></i> Une Seule Page
+                        </button>
+                    </div>
+
+                    <!-- Fullscreen & Semi Fullscreen Toggles -->
+                    <div class="flex items-center gap-1">
+                        <button onclick="toggleSemiFullscreen()" title="Agrandir dans la page" class="bg-zinc-950 hover:bg-zinc-900 p-1.5 rounded border border-zinc-800 text-zinc-400 hover:text-white transition-all">
+                            <i data-lucide="maximize-2" id="semi-fs-icon" class="w-3.5 h-3.5"></i>
+                        </button>
+                        <button onclick="toggleNativeFullscreen()" title="Plein écran navigateur" class="bg-zinc-950 hover:bg-zinc-900 p-1.5 rounded border border-zinc-800 text-zinc-400 hover:text-white transition-all">
+                            <i data-lucide="monitor" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+
+                    <!-- Git & ACP Links -->
+                    <a href="https://raw.githubusercontent.com/MaxiStudioDev/Cpu-32-Bits-Project-MSL5P/refs/heads/main/CPU.acp" target="_blank" class="bg-zinc-950 hover:bg-zinc-900 border border-zinc-800 text-accentgreen px-2.5 py-1.5 rounded text-[11px] font-mono transition-all flex items-center gap-1">
+                        <i data-lucide="download" class="w-3 h-3"></i> CPU.acp
+                    </a>
+                </div>
+            </div>
+
+            <!-- IDE/DOCUMENT MAIN CONTAINER -->
+            <div id="project-workspace-container" class="grid grid-cols-1 lg:grid-cols-12 gap-3 bg-zinc-950 rounded-xl border border-zinc-900 overflow-hidden flex-1 min-h-0 relative">
+                
+                <!-- Sidebar: File Tree Explorer (Hidden in Continue Page Mode) -->
+                <div id="project-sidebar" class="lg:col-span-4 bg-zinc-950 border-r border-zinc-900 flex flex-col h-full overflow-hidden">
+                    <!-- Sidebar Header -->
+                    <div class="bg-zinc-900/60 px-4 py-2 border-b border-zinc-900 flex items-center justify-between shrink-0">
+                        <span class="font-mono text-[10px] font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
+                            <i data-lucide="folder" class="w-3.5 h-3.5 text-yellow-500"></i>
+                            Explorateur de Projet
+                        </span>
+                        <span class="text-[9px] font-mono text-zinc-500">11 Chapitres</span>
+                    </div>
+
+                    <!-- File List Scroll -->
+                    <div class="p-2 overflow-y-auto flex-1 font-mono text-[11px] space-y-1">
+                        <button onclick="selectFile('intro')" id="file-intro" class="file-item active w-full text-left px-2.5 py-1.5 rounded flex items-center gap-2 text-zinc-400 hover:text-zinc-100">
+                            <i data-lucide="file-text" class="w-3.5 h-3.5 text-accentcyan shrink-0"></i>
+                            <span class="truncate">01_Le_Projet_Global.md</span>
+                        </button>
+                        <button onclick="selectFile('alu')" id="file-alu" class="file-item w-full text-left px-2.5 py-1.5 rounded flex items-center gap-2 text-zinc-400 hover:text-zinc-100">
+                            <i data-lucide="file-text" class="w-3.5 h-3.5 text-accentcyan shrink-0"></i>
+                            <span class="truncate">02_L_ALU_Commencement.md</span>
+                        </button>
+                        <button onclick="selectFile('adder')" id="file-adder" class="file-item w-full text-left px-2.5 py-1.5 rounded flex items-center gap-2 text-zinc-400 hover:text-zinc-100">
+                            <i data-lucide="file-text" class="w-3.5 h-3.5 text-accentcyan shrink-0"></i>
+                            <span class="truncate">03_Le_Full_Adder.md</span>
+                        </button>
+                        <button onclick="selectFile('sub')" id="file-sub" class="file-item w-full text-left px-2.5 py-1.5 rounded flex items-center gap-2 text-zinc-400 hover:text-zinc-100">
+                            <i data-lucide="file-text" class="w-3.5 h-3.5 text-accentcyan shrink-0"></i>
+                            <span class="truncate">04_Le_SUB_L_Enfer.md</span>
+                        </button>
+                        <button onclick="selectFile('solution')" id="file-solution" class="file-item w-full text-left px-2.5 py-1.5 rounded flex items-center gap-2 text-zinc-400 hover:text-zinc-100">
+                            <i data-lucide="file-text" class="w-3.5 h-3.5 text-accentcyan shrink-0"></i>
+                            <span class="truncate">05_La_Vraie_Solution.md</span>
+                        </button>
+                        <button onclick="selectFile('cablag')" id="file-cablag" class="file-item w-full text-left px-2.5 py-1.5 rounded flex items-center gap-2 text-zinc-400 hover:text-zinc-100">
+                            <i data-lucide="file-text" class="w-3.5 h-3.5 text-accentcyan shrink-0"></i>
+                            <span class="truncate">06_Cablage_Monstrueux.md</span>
+                        </button>
+                        <button onclick="selectFile('registres')" id="file-registres" class="file-item w-full text-left px-2.5 py-1.5 rounded flex items-center gap-2 text-zinc-400 hover:text-zinc-100">
+                            <i data-lucide="file-text" class="w-3.5 h-3.5 text-accentcyan shrink-0"></i>
+                            <span class="truncate">07_Les_Registres_Et_Bus.md</span>
+                        </button>
+                        <button onclick="selectFile('clock')" id="file-clock" class="file-item w-full text-left px-2.5 py-1.5 rounded flex items-center gap-2 text-zinc-400 hover:text-zinc-100">
+                            <i data-lucide="file-text" class="w-3.5 h-3.5 text-accentcyan shrink-0"></i>
+                            <span class="truncate">08_La_Clock_Et_La_ROM.md</span>
+                        </button>
+                        <button onclick="selectFile('catastrophe')" id="file-catastrophe" class="file-item w-full text-left px-2.5 py-1.5 rounded flex items-center gap-2 text-zinc-400 hover:text-zinc-100 text-red-400">
+                            <i data-lucide="alert-triangle" class="w-3.5 h-3.5 text-red-500 shrink-0"></i>
+                            <span class="truncate">09_La_Catastrophe.md</span>
+                        </button>
+                        <button onclick="selectFile('renaissance')" id="file-renaissance" class="file-item w-full text-left px-2.5 py-1.5 rounded flex items-center gap-2 text-zinc-400 hover:text-zinc-100 text-accentgreen">
+                            <i data-lucide="zap" class="w-3.5 h-3.5 text-accentgreen shrink-0"></i>
+                            <span class="truncate">10_La_Renaissance_4bit.md</span>
+                        </button>
+                        <button onclick="selectFile('isa')" id="file-isa" class="file-item w-full text-left px-2.5 py-1.5 rounded flex items-center gap-2 text-zinc-400 hover:text-zinc-100 text-accentpurple">
+                            <i data-lucide="cpu" class="w-3.5 h-3.5 text-accentpurple shrink-0"></i>
+                            <span class="truncate">11_Mon_ISA_Custom.md</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Area: Document Text Viewer -->
+                <div id="project-viewer-container" class="lg:col-span-8 flex flex-col h-full bg-zinc-950 overflow-hidden relative">
+                    
+                    <!-- Viewer Tab Header -->
+                    <div class="bg-zinc-900/40 border-b border-zinc-900 px-4 py-2 flex items-center justify-between font-mono text-[10px] text-zinc-400 shrink-0">
+                        <div class="flex items-center gap-1.5">
+                            <i data-lucide="edit-3" class="w-3.5 h-3.5 text-accentgreen"></i>
+                            <span id="editor-filename">01_Le_Projet_Global.md</span>
+                        </div>
+                        <span id="editor-mode-indicator" class="text-zinc-600 uppercase">Mode Éditeur (IDE)</span>
+                    </div>
+
+                    <!-- Viewer Content Panel (Strict internally-scrollable pane) -->
+                    <div class="p-5 overflow-y-auto flex-1 text-sm text-zinc-300 space-y-6 leading-relaxed select-text" id="editor-content-container">
+                        
+                        <!-- CHAPTER 1: INTRO GLOBAL -->
+                        <div id="content-intro" class="chapter-content block space-y-4">
+                            <h2 class="text-xl font-extrabold text-white flex items-center gap-2 border-b border-zinc-900 pb-2">
+                                <span class="text-accentcyan">🎯</span> Cpu-32-Bits-RISC-V-Project-MSL5P
+                            </h2>
+                            <p>
+                                Mon but est de créer un CPU 32 bits entièrement fait par moi. Je ne copie personne, je crée tout avec mes propres idées et ma logique.
+                            </p>
+                            <p>
+                                Depuis longtemps, je m'intéresse au fonctionnement réel des ordinateurs et à l'électronique logique. Au lieu de juste utiliser des programmes, j'aime comprendre comment une machine fonctionne à l'intérieur.
+                            </p>
+
+                            <div class="p-4 bg-zinc-900/60 border border-zinc-800 rounded-xl space-y-2 font-mono text-xs">
+                                <h4 class="font-bold text-white uppercase tracking-wider text-[11px]">Informations personnelles & Contexte :</h4>
+                                <p>• <strong>Nom :</strong> Ilyess</p>
+                                <p>• <strong>Âge :</strong> Actuellement 13 ans</p>
+                                <p>• <strong>Logiciel utilisé :</strong> <a href="https://antarescircuit.io" target="_blank" class="text-accentcyan hover:underline inline-flex items-center gap-0.5">Antares Circuit <i data-lucide="external-link" class="w-3 h-3"></i></a> (tout fait en numérique de A à Z)</p>
+                                <p>• <strong>Temps de dev :</strong> Environ 6-7 jours actuellement, entre 1h et 6h par jour.</p>
+                            </div>
+
+                            <p>
+                                <strong>Ma technique :</strong> Faire pendant minimum 2-3 jours tout seul. Si je n'y arrive pas, j'ai le droit de me renseigner sur les méthodes. C'est un domaine que je connais particulièrement bien car j'y suis passionné depuis tout petit, vers mes 5 ans (bricolage en carton, robotique 😂).
+                            </p>
+                            <p>
+                                <strong>Pourquoi RISC-V et pas ma propre architecture pour commencer ?</strong> Car Cargo supporte RISC-V nativement, et Rust est mon langage préféré. Je ne voulais pas utiliser de C/C++. Créer ma propre architecture de compilateur sera un plan pour plus tard 😉.
+                            </p>
+                            <p>
+                                <strong>Open Source :</strong> Mon projet sera bientôt en FULL opensource pour ceux qui veulent apprendre comme moi ou simplement voir mon travail. Dans mon projet, je laisse toutes mes erreurs (sauf les très anciennes que j'ai supprimées par erreur 😭), du coup vous pourrez voir mes erreurs effectuées. Le projet sera opensource lorsqu'il sera fini.
+                            </p>
+                        </div>
+
+                        <!-- CHAPTER 2: ALU COMMENCEMENT -->
+                        <div id="content-alu" class="chapter-content hidden space-y-4">
+                            <h2 class="text-xl font-extrabold text-white flex items-center gap-2 border-b border-zinc-900 pb-2">
+                                <span class="text-accentgreen">⚡</span> ALU — Le commencement
+                            </h2>
+                            <p>
+                                J'ai commencé par l'ALU (Arithmetic Logic Unit), parce que c'était déjà un domaine que je maîtrisais bien.
+                            </p>
+                            <p>
+                                Vers mes 12 ans, j'avais déjà créé une calculatrice 8 bits entièrement sur Minecraft, construite de zéro uniquement avec de la logique Redstone et des FULL ADDER. J'avais développé ce projet en environ 3 jours juste par passion.
+                            </p>
+
+                            <div class="p-4 bg-zinc-900/40 border border-zinc-900 rounded-lg space-y-2">
+                                <h4 class="font-mono text-xs font-bold text-accentgreen flex items-center gap-1">
+                                    <i data-lucide="edit-2" class="w-4 h-4"></i> Réflexion et conception :
+                                </h4>
+                                <p class="text-xs">
+                                    Au début, je faisais énormément de schémas sur papier pendant les temps morts en cours. Je réfléchissais directement à la logique des additions binaires :
+                                </p>
+                                <div class="bg-zinc-950 p-3 rounded font-mono text-xs space-y-1 text-zinc-400">
+                                    <p>1 + 1 = 10</p>
+                                    <p>1 + 0 = 1</p>
+                                    <p class="text-accentgreen">// Je me suis dit que quand les deux entrées sont à 1, une retenue devait être créée.</p>
+                                </div>
+                            </div>
+
+                            <p>
+                                J'ai alors utilisé une porte logique <strong>AND</strong> pour gérer cette retenue :
+                                <code class="bg-zinc-900 px-1.5 py-0.5 rounded font-mono text-xs text-white">1 AND 1 = 1</code> (toutes les autres combinaisons donnent 0). Premier objectif validé ✅.
+                            </p>
+                            <p>
+                                Ensuite, j'ai commencé à imaginer plusieurs versions de mon ADDER directement sur papier. Je faisais énormément de tests théoriques avant même de construire les circuits.
+                            </p>
+                            <p>
+                                Mais un problème est rapidement apparu : beaucoup de mes concepts fonctionnaient sur papier, mais ne convenaient pas aux systèmes industriels ou aux logiciels de simulation utilisant des portes logiques "propres". Du coup, j'ai décidé d'adapter toute mon ALU à une architecture plus stable et plus réaliste.
+                            </p>
+                            <p>
+                                <strong>Ajout de sécurités :</strong> En travaillant sur mon architecture, j'ai aussi ajouté plusieurs sécurités logiques. Le but était d'éviter que certaines parties du CPU exécutent des calculs ou changent d'état sans qu'une instruction le demande réellement.
+                            </p>
+                        </div>
+
+                        <!-- CHAPTER 3: FULL ADDER -->
+                        <div id="content-adder" class="chapter-content hidden space-y-4">
+                            <h2 class="text-xl font-extrabold text-white flex items-center gap-2 border-b border-zinc-900 pb-2">
+                                <span class="text-accentcyan">🚀</span> Le FULL ADDER
+                            </h2>
+                            <p>
+                                Après avoir testé les premières versions de mon additionneur de base, je suis passé à l'étape du <strong>FULL ADDER</strong> (Additionneur Complet).
+                            </p>
+                            <p>
+                                Le but était maintenant de gérer :
+                            </p>
+                            <ul class="list-disc pl-5 space-y-1.5 text-zinc-400">
+                                <li>Les deux bits d'entrée de base (<code class="font-mono text-zinc-300">A</code> et <code class="font-mono text-zinc-300">B</code>) ;</li>
+                                <li>Mais aussi la <strong>retenue provenant de l'addition précédente</strong> (le <code class="font-mono text-zinc-300">Carry-In</code>).</li>
+                            </ul>
+                            <p>
+                                C'est ce qui permet ensuite de relier plusieurs additionneurs unitaires ensemble pour construire une vraie architecture capable de gérer plusieurs bits d'affilée (de 4-bits à 32-bits).
+                            </p>
+                            <div class="p-4 bg-accentcyan/5 border border-accentcyan/20 rounded-xl flex items-center gap-3">
+                                <span class="text-xl">🔌</span>
+                                <p class="text-xs text-zinc-400 font-mono">
+                                    C'est la brique élémentaire indispensable pour assurer la scalabilité modulaire de mon CPU.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- CHAPTER 4: LE SUB L'ENFER -->
+                        <div id="content-sub" class="chapter-content hidden space-y-4">
+                            <h2 class="text-xl font-extrabold text-red-400 flex items-center gap-2 border-b border-zinc-900/80 pb-2">
+                                <span class="text-red-500">💀</span> Le SUB — Le vrai début des problèmes
+                            </h2>
+                            <p>
+                                J'étais super content de mon FULL ADDER. Mais ensuite je suis passé au SUB (soustracteur)… et c'est là que les vrais problèmes ont commencé.
+                            </p>
+                            <p>
+                                J'avais deux choix d'architecture devant moi :
+                            </p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                                <div class="bg-zinc-900/80 p-3 rounded-lg border border-zinc-800 space-y-1">
+                                    <h4 class="font-bold text-white text-xs">Solution 1 (Classique)</h4>
+                                    <p class="text-xs text-zinc-400">
+                                        Utiliser la technique <code class="text-accentcyan">A + (!B)</code> utilisée dans beaucoup de vrais processeurs industriels. Mais au début, je ne la considérais pas comme totalement fiable.
+                                    </p>
+                                </div>
+                                <div class="bg-red-950/20 p-3 rounded-lg border border-red-900/30 space-y-1">
+                                    <h4 class="font-bold text-red-400 text-xs">Solution 2 (From Scratch)</h4>
+                                    <p class="text-xs text-zinc-400">
+                                        Créer tout le système de soustraction moi-même de zéro, sans modèle.
+                                    </p>
+                                </div>
+                            </div>
+                            <p class="text-zinc-400 italic">
+                                Et évidemment… c'est cette deuxième solution que j'ai choisie pour le défi ! 😭
+                            </p>
+
+                            <div class="p-4 bg-red-950/10 border border-red-900/50 rounded-lg space-y-2">
+                                <h4 class="font-mono text-xs font-bold text-red-400 flex items-center gap-1">
+                                    <i data-lucide="alert-octagon" class="w-4 h-4"></i> Le FULL SUB — L'enfer :
+                                </h4>
+                                <p class="text-xs text-zinc-300">
+                                    Le vrai problème est arrivé quand j'ai commencé le FULL SUB, donc la gestion des retenues, des dettes et des emprunts binaires. Là, c'était un enfer. J'ai essayé énormément de techniques : sécurités logiques, protections, nouvelles structures, systèmes de contrôle...
+                                </p>
+                                <div class="p-3 bg-zinc-950 rounded font-mono text-xs text-red-300/90 space-y-1.5">
+                                    <p><strong>🐛 Les deux bugs qui m'ont détruit :</strong></p>
+                                    <p>• <strong>Premier bug :</strong> Dans certains cas négatifs très précis (ex: 0 - 1 + 0 - 0), le système me donnait -3 en décimal. Ce qui était totalement faux.</p>
+                                    <p>• <strong>Deuxième bug :</strong> La gestion des emprunts et des dettes binaires n'était pas stable.</p>
+                                </div>
+                                <p class="text-[11px] text-zinc-500 font-mono">
+                                    Et là… j'étais vraiment proche d'abandonner.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- CHAPTER 5: LA VRAIE SOLUTION -->
+                        <div id="content-solution" class="chapter-content hidden space-y-4">
+                            <h2 class="text-xl font-extrabold text-white flex items-center gap-2 border-b border-zinc-900 pb-2">
+                                <span class="text-accentgreen">🔥</span> Le déclic & La Vraie Solution
+                            </h2>
+                            <p>
+                                J'ai fait une pause de 2 jours pour me vider la tête. Puis un matin, je reviens avec une énorme énergie. Et là… énorme déclic.
+                            </p>
+                            <p>
+                                Je reprends toute ma logique du FULL ADDER. C'est à ce moment-là que mon <strong>FULL ADDER V3 stable</strong> est né. Moins expérimental. Vraiment stable.
+                            </p>
+                            <p>
+                                Ensuite, j'ai créé la V2 du soustracteur (SUB) avec une technique un peu… barbare 😭 : <span class="text-accentrust font-bold">9 portes XOR</span>. Oui. 9 XOR ! J'étais moi-même en train de rire devant ce que j'avais créé juste pour sécuriser certains cas négatifs. Malheureusement, j'ai supprimé cette version sans prendre de capture ou de photo, et aujourd'hui encore je le regrette.
+                            </p>
+
+                            <div class="p-4 bg-green-950/20 border border-green-900/50 rounded-xl space-y-2">
+                                <h4 class="font-mono text-xs font-bold text-accentgreen flex items-center gap-1">
+                                    <i data-lucide="check-circle" class="w-4 h-4"></i> Déclic final : La vraie solution
+                                </h4>
+                                <p class="text-xs text-zinc-300">
+                                    Puis j'ai eu un autre déclic. J'ai retesté la fameuse méthode complémentaire : <code class="text-accentcyan font-bold">A + (-B)</code>. Au début ça ne fonctionnait pas correctement. Puis j'ai décidé de dupliquer certains modules et de reconstruire la logique autrement. Et là… tout fonctionne !
+                                </p>
+                                <p class="text-xs text-zinc-400">
+                                    C'est aussi à ce moment-là que j'ai compris quelque chose d'important : la retenue n'était pas seulement une retenue. C'était aussi elle qui indiquait si le système était dans un état négatif ou non.
+                                </p>
+                            </div>
+
+                            <p>
+                                <strong>Architecture scalable :</strong> Une fois ce problème réglé, tout est allé extrêmement vite. Sous l'effet de la joie, j'ai créé mon ALU 4-bits, puis 8-bits, puis 16-bits en environ 10 minutes ! Parce que dès le début, j'avais pensé toute mon architecture comme un système modulaire et scalable. Chaque bloc pouvait être réutilisé et agrandi facilement. Et c'est exactement ce que je voulais depuis le début.
+                            </p>
+                        </div>
+
+                        <!-- CHAPTER 6: LE CALVAIRE DES CABLES -->
+                        <div id="content-cablag" class="chapter-content hidden space-y-4">
+                            <h2 class="text-xl font-extrabold text-white flex items-center gap-2 border-b border-zinc-900 pb-2">
+                                <span class="text-accentrust">🔌</span> Câblage de l'ALU — La souffrance
+                            </h2>
+                            <p>
+                                Maintenant que toute la logique ADD/SUB était enfin stable — ce qui m'a quand même pris 5 jours à cause des passages entre la V1, V2 puis V3 — je suis passé à la suite. Mais pour garder l'histoire dans un ordre logique, je vais expliquer ce qu'il restait encore à faire dans l'ALU.
+                            </p>
+                            <p>
+                                Il me restait :
+                            </p>
+                            <ul class="list-disc pl-5 space-y-1 text-zinc-400">
+                                <li>Un décodeur 3 bits ;</li>
+                                <li>Les portes logiques AND, OR et XOR en 32 exemplaires chacune.</li>
+                            </ul>
+                            <p>
+                                Et là… c'était une étape monstrueuse. Ça m'a pris environ 6 heures de travail quasiment non-stop. J'ai littéralement sacrifié une journée entière juste pour cette partie : toute une journée + encore 2 heures le lendemain.
+                            </p>
+
+                            <div class="p-4 bg-zinc-900/60 border border-zinc-900 rounded-xl">
+                                <h4 class="font-mono text-xs font-bold text-white mb-2">📊 Statistiques du câblage de l'ALU :</h4>
+                                <table class="w-full text-xs font-mono border border-zinc-800 rounded">
+                                    <thead>
+                                        <tr class="bg-zinc-900 text-accentcyan border-b border-zinc-800">
+                                            <th class="p-2 text-left">Composant / Module</th>
+                                            <th class="p-2 text-center">Nombre d'entrées</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-zinc-900">
+                                        <tr>
+                                            <td class="p-2 text-zinc-300">ADD/SUB Intégré</td>
+                                            <td class="p-2 text-center text-white">66 entrées</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-2 text-zinc-300">Module XOR</td>
+                                            <td class="p-2 text-center text-white">64 entrées</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-2 text-zinc-300">Module AND</td>
+                                            <td class="p-2 text-center text-white">64 entrées</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-2 text-zinc-300">Module OR</td>
+                                            <td class="p-2 text-center text-white">64 entrées</td>
+                                        </tr>
+                                        <tr class="bg-zinc-900 font-bold">
+                                            <td class="p-2 text-accentrust">TOTAL des connexions manuelles</td>
+                                            <td class="p-2 text-center text-accentrust">258 entrées</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <p>
+                                <strong>L'art du câblage :</strong> Du coup, j'ai choisi le style de câblage que je préfère : des fils propres, organisés, avec des chemins précis, sans croisements inutiles. Et honnêtement… à la fin ça devient presque de l'art 😭.
+                            </p>
+                            <p>
+                                Dans mon logiciel, j'essaie toujours d'utiliser le moins de fils possible et d'avoir un rendu visuel propre. Avant ça, j'avais pensé à utiliser des systèmes de bus simplifiés. Ça aurait été beaucoup plus simple et beaucoup moins fatigant. Mais j'ai volontairement refusé cette solution. Je voulais vraiment ressentir ce que ça fait de construire une architecture manuellement, comme un vrai concepteur de circuits. Du coup j'ai tout relié à la main.
+                            </p>
+                            <p>
+                                <strong>Le bus final :</strong> Pour les sorties finales, j'ai quand même utilisé un vrai bus car là, ça devenait logique pour l'architecture. J'ai donc relié tous les bus ensemble — 4 au total — avec des portes OR à 4 entrées afin d'obtenir une seule sortie bus de 32 bits. Et là… mon ALU était enfin terminée. Entièrement.
+                            </p>
+                            <p>
+                                <strong>⚡ Performance de l'ALU :</strong> Pour les curieux, cette ALU a une latence d'environ <span class="text-accentgreen font-bold">5370 ns</span>. Ce qui donne environ <span class="text-white font-bold">180 kHz</span>. Et honnêtement, pour ma première ALU entièrement terminée, je trouve ça vraiment correct, surtout que j'avais prévu un objectif de seulement 100 kHz !
+                            </p>
+                        </div>
+
+                        <!-- CHAPTER 7: REGISTRES -->
+                        <div id="content-registres" class="chapter-content hidden space-y-4">
+                            <h2 class="text-xl font-extrabold text-white flex items-center gap-2 border-b border-zinc-900 pb-2">
+                                <span class="text-accentcyan">🧩</span> LES REGISTRES — Fun
+                            </h2>
+                            <p>
+                                Puis après… LES REGISTRES 😭 ! Et étonnamment, cette partie était vraiment fun. Avec les bascules à relier, les copier-coller, les connexions… c'était presque reposant comparé au reste.
+                            </p>
+                            <p>
+                                Du coup, j'ai utilisé la méthode classique que tout le monde utilise pour les registres. Et j'ai créé un registre capable de stocker 32 bits. Puis ensuite, j'ai transformé ce système en un registre capable de stocker 32 nombres de 32 bits grâce à un décodeur 5 bits que j'ai conçu.
+                            </p>
+
+                            <div class="p-4 bg-zinc-900/60 border border-zinc-900 rounded-xl space-y-2">
+                                <h4 class="font-mono text-xs font-bold text-accentcyan flex items-center gap-1">
+                                    <i data-lucide="eye" class="w-4 h-4"></i> Le décodeur 5 bits — Fascinant :
+                                </h4>
+                                <p class="text-xs text-zinc-300">
+                                    Le système du décodeur 5 bits m'a vraiment fasciné. Parce qu'il me rappelait une logique que j'avais déjà expérimentée quand j'étais plus petit avec des LEGO et des systèmes modulaires. Du coup, celui-là, je l'ai entièrement fait à la main.
+                                </p>
+                            </div>
+
+                            <p>
+                                <strong>Double bus — La solution :</strong> Bus de registre unique limitait mon ALU. J'ai donc conçu une structure à double bus d'entrée/sortie, éliminant les duplications asynchrones de signaux.
+                            </p>
+                            <p>
+                                <strong>Performance :</strong> Ce registre à double bus a une latence de propagation d'écriture d'environ <span class="text-accentcyan font-bold">3380 ns</span>. Ce qui reste totalement acceptable pour mon objectif de fréquence de clock globale.
+                            </p>
+                        </div>
+
+                        <!-- CHAPTER 8: CLOCK ET ROM -->
+                        <div id="content-clock" class="chapter-content hidden space-y-4">
+                            <h2 class="text-xl font-extrabold text-white flex items-center gap-2 border-b border-zinc-900 pb-2">
+                                <span class="text-accentrust">⏱️</span> La clock, la ROM & Tang Nano 9K
+                            </h2>
+                            <p>
+                                <strong>La clock — Contrôle :</strong> En parlant de fréquence, j'ai finalement utilisé la clock de base du logiciel. Je n'avais pas vraiment le choix pour une future intégration physique dans une carte FPGA <strong>Tang Nano 9K</strong>. Du coup, j'ai surtout travaillé sur le contrôle de cette clock. J'ai ajouté un transistor P à la sortie afin de pouvoir stopper certaines parties du système. Comme ça, plus tard, je pourrai aussi réfléchir à de l'économie d'énergie.
+                            </p>
+                            
+                            <div class="p-4 bg-yellow-950/10 border border-yellow-900/40 rounded-xl space-y-1 text-zinc-300">
+                                <h4 class="font-mono text-xs font-bold text-amber-500">📦 La ROM — Spoiler :</h4>
+                                <p class="text-xs">
+                                    Le dernier élément sur lequel j'ai commencé à travailler : la ROM. Mais pour l'instant… elle ne contient quasiment rien 😭. Là je suis surtout en phase d'analyse pour préparer la suite du CPU.
+                                </p>
+                            </div>
+
+                            <p>
+                                Par contre, même si je comprends comment une ROM fonctionne réellement, je ne peux pas totalement la recréer de zéro dans ce projet. Il y a deux raisons :
+                            </p>
+                            <ol class="list-decimal pl-5 space-y-1.5 text-zinc-400 font-mono text-xs">
+                                <li>Le logiciel Antares ne possède pas les composants mémoire transistorisés nécessaires pour ce niveau de complexité de stockage.</li>
+                                <li>Je devrai utiliser la ROM native du logiciel de synthèse pour pouvoir compiler correctement le projet final dans la Tang Nano 9K.</li>
+                            </ol>
+                        </div>
+
+                        <!-- CHAPTER 9: LA CATASTROPHE -->
+                        <div id="content-catastrophe" class="chapter-content hidden space-y-4">
+                            <h2 class="text-xl font-extrabold text-red-400 flex items-center gap-2 border-b border-zinc-900/80 pb-2">
+                                <span class="text-red-500">🌍</span> La migration — La catastrophe
+                            </h2>
+                            <p>
+                                Un jour, je me suis réveillé et Windows commençait vraiment à me fatiguer : lenteurs, bugs, système lourd, problèmes constants...
+                            </p>
+                            <p>
+                                Du coup, j'ai pris la décision radicale de migrer à nouveau vers Linux 😭. Et cette fois, je suis parti sur une distribution très technique : <strong>Arch Linux avec l'environnement Hyprland</strong>.
+                            </p>
+                            <p>
+                                Mais le problème, c'est que mon PC utilise un processeur Gemini Lake avec un vieil écran. Et là… <strong>catastrophe 💀</strong>. Problèmes d'affichage, drivers, écran qui bug, affichage qui saute, système instable... J'ai dû passer énormément de temps à corriger tous les problèmes liés à la migration graphique.
+                            </p>
+
+                            <div class="p-4 bg-red-950/20 border border-red-900/50 rounded-xl space-y-2">
+                                <h4 class="font-mono text-xs font-bold text-red-400 flex items-center gap-1">
+                                    <i data-lucide="alert-octagon" class="w-4 h-4"></i> TOUT A ÉTÉ PERDU 😭 :
+                                </h4>
+                                <p class="text-xs text-zinc-300">
+                                    Pendant cette migration laborieuse... j'ai sauvegardé les mauvais fichiers sur ma partition externe. Et là… j'ai absolument TOUT perdu. Le CPU complet, l'ALU, les registres, le câblage, mes versions de test, mes archives. Absolument tout sauf... mes feuilles de brouillons sur papier.
+                                </p>
+                            </div>
+
+                            <p>
+                                <strong>😵 Moment de fatigue :</strong> Honnêtement, à ce moment-là, j'étais vraiment au bord d'abandonner. Le projet était devenu énorme à mes yeux. J'avais déjà investi environ <strong>16 heures de travail</strong> dedans, et pour moi, à 13 ans, c'était gigantesque.
+                            </p>
+                            <p>
+                                J'ai essayé de récupérer les fichiers avec plusieurs méthodes de restauration de disques. Impossible. Toujours impossible. Du coup, j'ai préféré faire une pause complète. Parce que je sais que prendre des décisions quand je suis mentalement détruit, ce n'est jamais une bonne idée. Alors j'ai arrêté pendant 1 jour complet.
+                            </p>
+                        </div>
+
+                        <!-- CHAPTER 10: RENAISSANCE -->
+                        <div id="content-renaissance" class="chapter-content hidden space-y-4">
+                            <h2 class="text-xl font-extrabold text-accentgreen flex items-center gap-2 border-b border-zinc-900 pb-2">
+                                <span class="text-accentgreen">🔥</span> La Renaissance (4-bits Rebirth)
+                            </h2>
+                            <p>
+                                Puis un matin… je me suis réveillé. Et là, au lieu d'abandonner, j'ai repris mes feuilles papier.
+                            </p>
+                            <p>
+                                J'ai recommencé toute l'architecture en <strong>4 bits</strong> pour repartir sur des bases propres et vérifier toute ma logique correctement. Et en refaisant tout de zéro, j'ai commencé à réfléchir à plein de nouvelles optimisations !
+                            </p>
+                            <p>
+                                Par exemple, mon additionneur (ADD) utilisait maintenant <strong>un transistor de moins 😭</strong>. J'ai aussi totalement repensé le soustracteur (SUB). Parce qu'entre-temps, j'avais oublié certaines parties de mes anciennes versions complexes, mais toutes les connaissances de base et la logique que j'avais acquises étaient toujours gravées dans ma tête.
+                            </p>
+
+                            <div class="p-4 bg-zinc-900/60 border border-zinc-900 rounded-xl space-y-1 font-mono text-xs text-zinc-400">
+                                <span class="text-accentgreen">// J'ai tout recommencé encore plus vite qu'avant :</span>
+                                <p>• FULL ADDER [Optimisé]</p>
+                                <p>• FULL SUB [Stabilisé]</p>
+                                <p>• ALU 4-bits & Décodeurs rapides</p>
+                                <p>• Registres avancés à double bus</p>
+                                <p>• Contrôle de Clock à transistor P</p>
+                            </div>
+
+                            <p>
+                                Et cette fois… j'ai été beaucoup plus vite ! J'ai même réussi à concevoir et à intégrer ma propre <strong>ISA (Jeu d'instructions)</strong>. Et maintenant mon CPU est bientôt terminé 😭🔥 !
+                            </p>
+                            <p>
+                                Actuellement, il est en phase bêta : quelques petits bugs subsistent dans l'ALU, ainsi que certains mauvais branchements qui demandent des corrections. Mais maintenant, pour la toute première fois… je travaille enfin sur mon propre <strong>langage de programmation</strong> !
+                            </p>
+                        </div>
+
+                        <!-- CHAPTER 11: L'ISA CUSTOM -->
+                        <div id="content-isa" class="chapter-content hidden space-y-6">
+                            <h2 class="text-xl font-extrabold text-accentpurple flex items-center gap-2 border-b border-zinc-900 pb-2">
+                                <span class="text-accentpurple">🧠</span> MON ISA (Jeu d'Instructions)
+                            </h2>
+                            <p>
+                                Et là… vous allez peut-être rire 😭 : parce que pour un CPU de calcul interne de 4-bits… mes instructions de code font <strong>16-bits 💀</strong> !
+                            </p>
+                            <p>
+                                Oui, 16 bits. Mais ce n'est absolument pas au hasard. J'ai réfléchi à cette architecture pendant la nuit entière avant de faire ce choix. Le problème, c'est que ma mémoire est statique. Je ne peux pas décider dynamiquement de sa taille comme sur un vrai système moderne. Du coup, j'ai préféré créer une ISA plus large et confortable dès le début :
+                            </p>
+                            <ul class="list-disc pl-5 space-y-1 text-zinc-400 font-mono text-xs">
+                                <li><strong>8 bits</strong> pour le transport des données ;</li>
+                                <li><strong>8 bits</strong> pour les opcodes d'opérations et de contrôle.</li>
+                                <li>Total : 16 bits par ligne d'instruction.</li>
+                            </ul>
+
+                            <!-- FIELDS TABLE -->
+                            <div class="space-y-2">
+                                <h4 class="font-mono text-xs font-bold text-accentpurple uppercase tracking-wider">Détail des champs de l'instruction 16-bits :</h4>
+                                <div class="overflow-x-auto border border-zinc-800 rounded">
+                                    <table class="w-full text-xs font-mono">
+                                        <thead>
+                                            <tr class="bg-zinc-900 text-accentcyan border-b border-zinc-800">
+                                                <th class="p-2 text-left w-1/5">Bits</th>
+                                                <th class="p-2 text-left w-1/4">Nom du champ</th>
+                                                <th class="p-2 text-left">Description technique</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-zinc-900">
+                                            <tr>
+                                                <td class="p-2 text-white font-bold">0 - 1</td>
+                                                <td class="p-2 text-zinc-300">Sélecteur</td>
+                                                <td class="p-2 text-zinc-400"><code class="bg-zinc-900 text-white px-1 py-0.5 rounded">01</code> = ALU, <code class="bg-zinc-900 text-white px-1 py-0.5 rounded">10</code> = Mémoire</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="p-2 text-white font-bold">2 - 4</td>
+                                                <td class="p-2 text-zinc-300">Décodeur</td>
+                                                <td class="p-2 text-zinc-400">Pour l'ALU : opération. Pour la mémoire : registre destination</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="p-2 text-white font-bold">5</td>
+                                                <td class="p-2 text-zinc-300">Action FINISH</td>
+                                                <td class="p-2 text-zinc-400"><code class="bg-zinc-900 text-accentpurple px-1 py-0.5 rounded">1</code> = Écraser la donnée calculée dans le registre ciblé</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="p-2 text-white font-bold">6 - 7</td>
+                                                <td class="p-2 text-zinc-300">Réservé</td>
+                                                <td class="p-2 text-zinc-500">Debug futur ou extensions du jeu d'instructions</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="p-2 text-white font-bold">8 - 11</td>
+                                                <td class="p-2 text-zinc-300">Opérande 1</td>
+                                                <td class="p-2 text-zinc-400">Premier nombre (Registre ou valeur brute de 4 bits)</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="p-2 text-white font-bold">12 - 15</td>
+                                                <td class="p-2 text-zinc-300">Opérande 2</td>
+                                                <td class="p-2 text-zinc-400">Deuxième nombre (Registre ou valeur brute de 4 bits)</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- ALU OPERATIONS TABLE -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="space-y-2">
+                                    <h4 class="font-mono text-xs font-bold text-accentgreen uppercase tracking-wider">⚡ Opérations ALU (Sélecteur = 01)</h4>
+                                    <div class="overflow-x-auto border border-zinc-800 rounded">
+                                        <table class="w-full text-xs font-mono">
+                                            <thead>
+                                                <tr class="bg-zinc-900 text-accentgreen border-b border-zinc-800">
+                                                    <th class="p-2 text-left">Code bits</th>
+                                                    <th class="p-2 text-left">Opération</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="divide-y divide-zinc-900">
+                                                <tr><td class="p-2 font-bold text-white">000</td><td class="p-2 text-zinc-300">ADD (Additionneur V3)</td></tr>
+                                                <tr><td class="p-2 font-bold text-white">100</td><td class="p-2 text-zinc-300">SUB (Soustracteur V3)</td></tr>
+                                                <tr><td class="p-2 font-bold text-white">010</td><td class="p-2 text-zinc-300">OR (Logique OR)</td></tr>
+                                                <tr><td class="p-2 font-bold text-white">110</td><td class="p-2 text-zinc-300">AND (Logique AND)</td></tr>
+                                                <tr><td class="p-2 font-bold text-white">001</td><td class="p-2 text-zinc-300">XOR (Logique XOR)</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <!-- MEMORY OPERATIONS TABLE -->
+                                <div class="space-y-2">
+                                    <h4 class="font-mono text-xs font-bold text-accentcyan uppercase tracking-wider">💾 Opérations Mémoire (Sélecteur = 10)</h4>
+                                    <div class="overflow-x-auto border border-zinc-800 rounded">
+                                        <table class="w-full text-xs font-mono">
+                                            <thead>
+                                                <tr class="bg-zinc-900 text-accentcyan border-b border-zinc-800">
+                                                    <th class="p-2 text-left">Code bits</th>
+                                                    <th class="p-2 text-left">Action de stockage</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="divide-y divide-zinc-900">
+                                                <tr><td class="p-2 font-bold text-white">000</td><td class="p-2 text-zinc-300">Stocker dans le registre R1</td></tr>
+                                                <tr><td class="p-2 font-bold text-white">001</td><td class="p-2 text-zinc-300">Stocker dans le registre R2</td></tr>
+                                                <tr><td class="p-2 font-bold text-white">010</td><td class="p-2 text-zinc-300">Stocker dans le registre R3</td></tr>
+                                                <tr><td class="p-2 font-bold text-white">011</td><td class="p-2 text-zinc-300">Stocker dans le registre R4</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- EXAMPLE ANALYSIS -->
+                            <div class="p-4 bg-zinc-900/60 border border-zinc-800 rounded-xl space-y-2">
+                                <h4 class="font-mono text-xs font-bold text-white uppercase tracking-wider">🎯 Exemple concret d'instruction :</h4>
+                                <p class="text-xs">Exemple pour store <code class="text-white font-bold">5 + 3</code> dans le registre <code class="text-accentgreen font-bold">R1</code> :</p>
+                                <div class="bg-zinc-950 p-3 rounded font-mono text-xs space-y-1.5 text-zinc-300 border border-zinc-900">
+                                    <p class="text-zinc-500">Sélecteur | Décodeur | FINISH | Réservé | Opérande1 | Opérande2</p>
+                                    <p class="text-accentcyan font-bold">01 <span class="text-zinc-500">|</span> 000 <span class="text-zinc-500">|</span> 1 <span class="text-zinc-500">|</span> 00 <span class="text-zinc-500">|</span> 0101 <span class="text-zinc-500">|</span> 0011</p>
+                                    <p class="pt-1.5 text-white">Résultat de la chaîne binaire : <span class="text-accentgreen tracking-widest font-bold">0100010010100011</span></p>
+                                    <p class="text-zinc-500">Pour une addition simple : 0100000000000000</p>
+                                </div>
+                                <p class="text-[11px] text-zinc-400 italic">Voilà 😭 Très simple… en apparence.</p>
+                            </div>
+
+                            <div class="pt-4 border-t border-zinc-900 flex justify-between items-center">
+                                <span class="text-xs font-mono text-zinc-500">⏳ À SUIVRE...</span>
+                                <button onclick="switchTab('sim')" class="bg-accentgreen text-black px-4 py-2 rounded font-mono font-bold text-xs hover:bg-green-600 transition-all flex items-center gap-1">
+                                    <i data-lucide="play" class="w-3.5 h-3.5"></i> Essayer dans le simulateur
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Editor Bottom Nav Bar (Hidden in Continuous Page Mode) -->
+                    <div id="project-editor-footer" class="bg-zinc-900/40 border-t border-zinc-900 px-4 py-3 flex items-center justify-between font-mono text-xs shrink-0 select-none">
+                        <button onclick="prevChapter()" class="text-zinc-500 hover:text-white transition-all flex items-center gap-1.5" id="editor-prev-btn">
+                            <i data-lucide="arrow-left" class="w-4 h-4"></i> Chapitre précédent
+                        </button>
+                        <span id="editor-page-indicator" class="text-zinc-600">1 / 11</span>
+                        <button onclick="nextChapter()" class="text-accentgreen hover:text-green-400 transition-all flex items-center gap-1.5" id="editor-next-btn">
+                            Chapitre suivant <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- ========================================== -->
+        <!-- WORKSPACE SECTION 3: THE INTERACTIVE ISA DECODER & SIMULATOR -->
+        <!-- ========================================== -->
+        <section id="section-sim" class="tab-content page-fade-in hidden h-full flex flex-col gap-4">
+            
+            <div class="border-b border-zinc-900 pb-2 shrink-0">
+                <h2 class="text-lg font-extrabold text-white flex items-center gap-2">
+                    <span class="text-accentgreen">⚡</span> Simulateur d'Instructions & Décodeur de CPU Custom
+                </h2>
+                <p class="text-[11px] font-mono text-zinc-500">Configure tes 16 bits en direct et vois comment ton ALU effectue l'opération</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1 min-h-0">
+                
+                <!-- Bit Selectors panel -->
+                <div class="lg:col-span-5 rounded-xl glass-panel p-4 border border-zinc-800/80 flex flex-col justify-between min-h-0 overflow-y-auto">
+                    <div class="space-y-4">
+                        <div>
+                            <h3 class="text-xs font-bold font-mono text-white uppercase tracking-wider flex items-center justify-between">
+                                <span>Contrôleur de Registres</span>
+                                <span class="text-[9px] bg-accentgreen/10 text-accentgreen border border-accentgreen/20 px-1.5 py-0.5 rounded">16-bit logic</span>
+                            </h3>
+                        </div>
+
+                        <!-- Bit Inputs Grid -->
+                        <div class="space-y-3">
+                            <div>
+                                <div class="flex justify-between text-[9px] font-mono text-zinc-500 px-1 mb-1">
+                                    <span>Poids Forts (Opérandes A / B)</span>
+                                    <span>Bits [15 - 8]</span>
+                                </div>
+                                <div class="flex justify-between gap-1">
+                                    <button onclick="toggleBit(15)" id="bit-15" class="flex-1 py-2.5 rounded bg-zinc-950 border border-zinc-900 text-xs font-mono font-bold hover:border-accentrust/50 text-zinc-500 transition-all">0</button>
+                                    <button onclick="toggleBit(14)" id="bit-14" class="flex-1 py-2.5 rounded bg-zinc-950 border border-zinc-900 text-xs font-mono font-bold hover:border-accentrust/50 text-zinc-500 transition-all">0</button>
+                                    <button onclick="toggleBit(13)" id="bit-13" class="flex-1 py-2.5 rounded bg-zinc-950 border border-zinc-900 text-xs font-mono font-bold hover:border-accentrust/50 text-zinc-500 transition-all">0</button>
+                                    <button onclick="toggleBit(12)" id="bit-12" class="flex-1 py-2.5 rounded bg-zinc-950 border border-zinc-900 text-xs font-mono font-bold hover:border-accentrust/50 text-zinc-500 transition-all">0</button>
+                                    <span class="w-1.5"></span>
+                                    <button onclick="toggleBit(11)" id="bit-11" class="flex-1 py-2.5 rounded bg-zinc-950 border border-zinc-900 text-xs font-mono font-bold hover:border-accentrust/50 text-zinc-500 transition-all">0</button>
+                                    <button onclick="toggleBit(10)" id="bit-10" class="flex-1 py-2.5 rounded bg-zinc-950 border border-zinc-900 text-xs font-mono font-bold hover:border-accentrust/50 text-zinc-500 transition-all">0</button>
+                                    <button onclick="toggleBit(9)" id="bit-9" class="flex-1 py-2.5 rounded bg-zinc-950 border border-zinc-900 text-xs font-mono font-bold hover:border-accentrust/50 text-zinc-500 transition-all">0</button>
+                                    <button onclick="toggleBit(8)" id="bit-8" class="flex-1 py-2.5 rounded bg-zinc-950 border border-zinc-900 text-xs font-mono font-bold hover:border-accentrust/50 text-zinc-500 transition-all">0</button>
+                                </div>
+                                <div class="flex justify-between text-[8px] font-mono text-accentrust px-1 mt-1">
+                                    <span>Opérande 2 (B)</span>
+                                    <span>Opérande 1 (A)</span>
+                                </div>
+                            </div>
+
+                            <div class="border-t border-zinc-900 pt-2">
+                                <div class="flex justify-between text-[9px] font-mono text-zinc-500 px-1 mb-1">
+                                    <span>Contrôles, Décodeurs & Sélecteurs</span>
+                                    <span>Bits [7 - 0]</span>
+                                </div>
+                                <div class="flex justify-between gap-1">
+                                    <button onclick="toggleBit(7)" id="bit-7" class="flex-1 py-2.5 rounded bg-zinc-950 border border-zinc-900 text-xs font-mono font-bold hover:border-accentcyan/50 text-zinc-500 transition-all">0</button>
+                                    <button onclick="toggleBit(6)" id="bit-6" class="flex-1 py-2.5 rounded bg-zinc-950 border border-zinc-900 text-xs font-mono font-bold hover:border-accentcyan/50 text-zinc-500 transition-all">0</button>
+                                    <span class="w-1.5"></span>
+                                    <button onclick="toggleBit(5)" id="bit-5" class="flex-1 py-2.5 rounded bg-zinc-950 border border-zinc-900 text-xs font-mono font-bold hover:border-accentpurple/50 text-zinc-500 transition-all">0</button>
+                                    <span class="w-1.5"></span>
+                                    <button onclick="toggleBit(4)" id="bit-4" class="flex-1 py-2.5 rounded bg-zinc-950 border border-zinc-900 text-xs font-mono font-bold hover:border-accentgreen/50 text-zinc-500 transition-all">0</button>
+                                    <button onclick="toggleBit(3)" id="bit-3" class="flex-1 py-2.5 rounded bg-zinc-950 border border-zinc-900 text-xs font-mono font-bold hover:border-accentgreen/50 text-zinc-500 transition-all">0</button>
+                                    <button onclick="toggleBit(2)" id="bit-2" class="flex-1 py-2.5 rounded bg-zinc-950 border border-zinc-900 text-xs font-mono font-bold hover:border-accentgreen/50 text-zinc-500 transition-all">0</button>
+                                    <span class="w-1.5"></span>
+                                    <button onclick="toggleBit(1)" id="bit-1" class="flex-1 py-2.5 rounded bg-zinc-950 border border-zinc-900 text-xs font-mono font-bold hover:border-white/50 text-zinc-500 transition-all">0</button>
+                                    <button onclick="toggleBit(0)" id="bit-0" class="flex-1 py-2.5 rounded bg-zinc-950 border border-zinc-900 text-xs font-mono font-bold hover:border-white/50 text-zinc-500 transition-all">0</button>
+                                </div>
+                                <div class="flex justify-between text-[8px] font-mono px-1 mt-1">
+                                    <span class="text-accentcyan">Reservé</span>
+                                    <span class="text-accentpurple">FINISH</span>
+                                    <span class="text-accentgreen">Décodeur</span>
+                                    <span class="text-white">Sélecteur</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Instruction display -->
+                    <div class="py-2.5 px-3 bg-zinc-950 rounded-lg border border-zinc-900 flex items-center justify-between my-3 shrink-0">
+                        <span class="text-[10px] font-mono text-zinc-500">Opcode :</span>
+                        <span id="binary-string-display" class="font-mono text-sm font-bold tracking-widest text-accentgreen">0000 0000 0000 0000</span>
+                    </div>
+
+                    <!-- Presets scrollable container inside -->
+                    <div class="space-y-2 shrink-0">
+                        <h4 class="text-[9px] font-mono font-bold text-zinc-400">RÉSERVOIR DE PRESETS RAPIDES :</h4>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="loadPreset('0100010001010011')" class="text-left bg-zinc-900/40 hover:bg-zinc-900 p-2 rounded border border-zinc-850 text-[10px] font-mono transition-all flex flex-col justify-between group">
+                                <span class="text-white group-hover:text-accentgreen font-bold">5 + 3 (ADD dans R1)</span>
+                                <span class="text-[8px] text-zinc-500">01 000 1 00 0101 0011</span>
+                            </button>
+                            <button onclick="loadPreset('0110010011000100')" class="text-left bg-zinc-900/40 hover:bg-zinc-900 p-2 rounded border border-zinc-850 text-[10px] font-mono transition-all flex flex-col justify-between group">
+                                <span class="text-white group-hover:text-accentgreen font-bold">12 - 4 (SUB dans R1)</span>
+                                <span class="text-[8px] text-zinc-500">01 100 1 00 1100 0100</span>
+                            </button>
+                            <button onclick="loadPreset('0101010010100101')" class="text-left bg-zinc-900/40 hover:bg-zinc-900 p-2 rounded border border-zinc-850 text-[10px] font-mono transition-all flex flex-col justify-between group">
+                                <span class="text-white group-hover:text-accentgreen font-bold">10 OR 5 (OR dans R1)</span>
+                                <span class="text-[8px] text-zinc-500">01 010 1 00 1010 0101</span>
+                            </button>
+                            <button onclick="loadPreset('1001010011110000')" class="text-left bg-zinc-900/40 hover:bg-zinc-900 p-2 rounded border border-zinc-850 text-[10px] font-mono transition-all flex flex-col justify-between group">
+                                <span class="text-white group-hover:text-accentcyan font-bold">Stocker 15 dans R3</span>
+                                <span class="text-[8px] text-zinc-500">10 010 1 00 1111 0000</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right panel: Analytical dashboard -->
+                <div class="lg:col-span-7 flex flex-col gap-4 min-h-0 overflow-y-auto">
+                    
+                    <!-- Decoded values panel -->
+                    <div class="bg-zinc-950 rounded-xl p-4 border border-zinc-900/80 space-y-3 shrink-0">
+                        <h3 class="text-xs font-bold font-mono text-zinc-300 border-b border-zinc-900 pb-1.5 flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-accentcyan inline-block animate-pulse"></span>
+                            DÉCODAGE DES CHAMPS INDIVIDUELS
+                        </h3>
+
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                            <div class="bg-zinc-900/50 p-2.5 rounded border border-zinc-900 flex flex-col justify-between">
+                                <span class="text-[9px] font-mono text-zinc-500 uppercase">Sélecteur [0-1]</span>
+                                <span id="decode-selector-val" class="text-xs font-mono font-bold text-white py-0.5">01</span>
+                                <span id="decode-selector-desc" class="text-[9px] font-mono text-accentgreen">Calcul ALU</span>
+                            </div>
+                            <div class="bg-zinc-900/50 p-2.5 rounded border border-zinc-900 flex flex-col justify-between">
+                                <span class="text-[9px] font-mono text-zinc-500 uppercase">Décodeur [2-4]</span>
+                                <span id="decode-decoder-val" class="text-xs font-mono font-bold text-white py-0.5">000</span>
+                                <span id="decode-decoder-desc" class="text-[9px] font-mono text-accentgreen">ADD (ADD V3)</span>
+                            </div>
+                            <div class="bg-zinc-900/50 p-2.5 rounded border border-zinc-900 flex flex-col justify-between">
+                                <span class="text-[9px] font-mono text-zinc-500 uppercase">FINISH [5]</span>
+                                <span id="decode-finish-val" class="text-xs font-mono font-bold text-white py-0.5">Actif (1)</span>
+                                <span id="decode-finish-desc" class="text-[9px] font-mono text-accentpurple">Écraser donné</span>
+                            </div>
+                            <div class="bg-zinc-900/50 p-2.5 rounded border border-zinc-900 flex flex-col justify-between">
+                                <span class="text-[9px] font-mono text-zinc-500 uppercase">A (Op1) [8-11]</span>
+                                <span id="decode-op1-bin" class="text-xs font-mono font-bold text-zinc-300 py-0.5">0101</span>
+                                <span id="decode-op1-dec" class="text-[9px] font-mono text-accentrust font-bold">Val: 5</span>
+                            </div>
+                            <div class="bg-zinc-900/50 p-2.5 rounded border border-zinc-900 flex flex-col justify-between">
+                                <span class="text-[9px] font-mono text-zinc-500 uppercase">B (Op2) [12-15]</span>
+                                <span id="decode-op2-bin" class="text-xs font-mono font-bold text-zinc-300 py-0.5">0011</span>
+                                <span id="decode-op2-dec" class="text-[9px] font-mono text-accentrust font-bold">Val: 3</span>
+                            </div>
+                            <div class="bg-zinc-900/50 p-2.5 rounded border border-zinc-900 flex flex-col justify-between">
+                                <span class="text-[9px] font-mono text-zinc-500 uppercase">Réservé [6-7]</span>
+                                <span id="decode-reserved-val" class="text-xs font-mono font-bold text-zinc-600 py-0.5">00</span>
+                                <span class="text-[9px] font-mono text-zinc-500">Debug</span>
+                            </div>
+                        </div>
+
+                        <!-- Active hardware outputs -->
+                        <div class="p-0.5 hypr-active-border rounded-lg mt-2">
+                            <div class="bg-cardbg rounded p-3 flex flex-col sm:flex-row items-center justify-between gap-3">
+                                <div class="space-y-0.5">
+                                    <span class="text-[9px] font-mono text-zinc-500 uppercase block">RÉSULTAT DE L'OPÉRATION</span>
+                                    <div class="flex items-center gap-2">
+                                        <span id="processor-op-symbol" class="text-lg font-bold text-white bg-zinc-900 w-8 h-8 rounded flex items-center justify-center border border-zinc-800">+</span>
+                                        <div class="font-mono">
+                                            <span id="processor-formula" class="text-sm font-bold text-white">5 + 3</span>
+                                            <span class="text-zinc-500"> = </span>
+                                            <span id="processor-result" class="text-base font-bold text-accentgreen">8</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="bg-zinc-950 px-3 py-1.5 rounded border border-zinc-900 text-center sm:text-right font-mono text-[10px]">
+                                    <span id="processor-result-bin" class="text-sm font-bold text-accentgreen tracking-wider block">1000</span>
+                                    <span id="processor-result-flag" class="text-[8px] text-zinc-500 block">[FLAG: OK / Stable]</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Flow Diagram Panel -->
+                    <div class="bg-zinc-950 rounded-xl p-4 border border-zinc-900 flex-1 flex flex-col justify-between min-h-[140px]">
+                        <h4 class="text-[10px] font-mono font-bold text-zinc-400 flex items-center gap-1.5">
+                            <i data-lucide="activity" class="w-3.5 h-3.5 text-accentgreen"></i>
+                            ÉMULATION DES BUS PHYSIQUES (SIGNAUX LOGIQUES)
+                        </h4>
+                        
+                        <div class="p-3 bg-zinc-900/40 rounded border border-zinc-900 flex flex-col gap-2 font-mono text-[11px] text-zinc-400 flex-1 mt-2 justify-center">
+                            <div class="flex items-center justify-between">
+                                <span class="flex items-center gap-1.5"><span id="gate-led-selector" class="w-2 h-2 rounded-full bg-accentgreen inline-block"></span> Décodeur d'Instruction :</span>
+                                <span id="gate-desc-selector" class="text-white text-right">Bus validé par le Sélecteur</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="flex items-center gap-1.5"><span id="gate-led-alu" class="w-2 h-2 rounded-full bg-accentgreen inline-block"></span> Unité de calcul ALU :</span>
+                                <span id="gate-desc-alu" class="text-white text-right">Additionneur V3 Actif (5370 ns)</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="flex items-center gap-1.5"><span id="gate-led-reg" class="w-2 h-2 rounded-full bg-zinc-800 inline-block"></span> Registres Double Bus :</span>
+                                <span id="gate-desc-reg" class="text-white text-right">Stocker = Inactif (Lecture seule)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- ========================================== -->
+        <!-- WORKSPACE SECTION 4: SKILLS & COMPETENCES -->
+        <!-- ========================================== -->
+        <section id="section-skills" class="tab-content page-fade-in hidden h-full flex flex-col gap-6">
+            
+            <div class="border-b border-zinc-900 pb-2 shrink-0">
+                <h2 class="text-lg font-extrabold text-white flex items-center gap-2">
+                    <span class="text-accentrust">🔧</span> Compétences & Technologies
+                </h2>
+                <p class="text-xs font-mono text-zinc-500">Un spectre technique complet allant du silicium au développement d'applications natives</p>
+            </div>
+
+            <!-- Bento scroll container -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 flex-1 overflow-y-auto min-h-0 pr-1">
+                
+                <!-- Skill 1: GDScript -->
+                <div class="glass-panel p-5 rounded-xl border border-zinc-900 hover:border-cyan-400/30 transition-all space-y-3 relative overflow-hidden flex flex-col justify-between h-[180px]">
+                    <div class="absolute top-0 right-0 p-3 font-mono text-xs text-cyan-400 font-bold bg-cyan-950/25 border-b border-l border-zinc-900 rounded-bl-lg select-none">
+                        1000%
+                    </div>
+                    <div class="flex items-center gap-2.5">
+                        <span class="text-2xl">🤖</span>
+                        <div>
+                            <h3 class="text-xs font-bold text-white">GDScript (Godot Engine)</h3>
+                            <span class="text-[9px] font-mono text-zinc-500">Logique de jeu ultra-optimisée</span>
+                        </div>
+                    </div>
+                    <p class="text-zinc-400 text-[11px] leading-relaxed">
+                        Création de systèmes robustes, d'automates cellulaires et d'architectures asynchrones au sein de l'écosystème du moteur de jeu Godot.
+                    </p>
+                    <div class="pt-2 border-t border-zinc-900 flex items-center justify-between text-[10px] font-mono">
+                        <span class="text-zinc-500">Statut :</span>
+                        <span class="text-cyan-400 flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse inline-block"></span>
+                            ACTIVE BOOST READY
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Skill 2: Rust -->
+                <div class="glass-panel p-5 rounded-xl border border-zinc-900 hover:border-accentrust/30 transition-all space-y-3 relative overflow-hidden flex flex-col justify-between h-[180px]">
+                    <div class="absolute top-0 right-0 p-3 font-mono text-xs text-accentrust font-bold bg-orange-950/25 border-b border-l border-zinc-900 rounded-bl-lg select-none">
+                        80%
+                    </div>
+                    <div class="flex items-center gap-2.5">
+                        <span class="text-2xl">🦀</span>
+                        <div>
+                            <h3 class="text-xs font-bold text-white">Rust</h3>
+                            <span class="text-[9px] font-mono text-zinc-500">Programmation système bas-niveau</span>
+                        </div>
+                    </div>
+                    <p class="text-zinc-400 text-[11px] leading-relaxed">
+                        Écriture de code asynchrone, d'interopérabilité pour architectures matérielles (RISC-V) et de backends performants pour applications.
+                    </p>
+                    <div class="pt-2 border-t border-zinc-900 flex items-center justify-between text-[10px] font-mono">
+                        <span class="text-zinc-500">Compilateur :</span>
+                        <span class="text-accentrust font-bold">rustc --target riscv32</span>
+                    </div>
+                </div>
+
+                <!-- Skill 3: Code Logic -->
+                <div class="glass-panel p-5 rounded-xl border border-zinc-900 hover:border-accentgreen/30 transition-all space-y-3 relative overflow-hidden flex flex-col justify-between h-[180px]">
+                    <div class="absolute top-0 right-0 p-3 font-mono text-xs text-accentgreen font-bold bg-green-950/25 border-b border-l border-zinc-900 rounded-bl-lg select-none">
+                        1000%
+                    </div>
+                    <div class="flex items-center gap-2.5">
+                        <span class="text-2xl">🧩</span>
+                        <div>
+                            <h3 class="text-xs font-bold text-white">Logique de Code</h3>
+                            <span class="text-[9px] font-mono text-zinc-500">Algorithmes & Circuits Portes</span>
+                        </div>
+                    </div>
+                    <p class="text-zinc-400 text-[11px] leading-relaxed">
+                        Résolution de problèmes par la logique mathématique. Des portes logiques primitives aux structures de graphes complexes de bas niveau.
+                    </p>
+                    <div class="pt-2 border-t border-zinc-900 flex items-center justify-between text-[10px] font-mono">
+                        <span class="text-zinc-500">Moteur logique :</span>
+                        <span class="text-accentgreen font-bold">100% STABLE</span>
+                    </div>
+                </div>
+
+                <!-- Skill 4: Tauri + React -->
+                <div class="glass-panel p-5 rounded-xl border border-zinc-900 hover:border-accentpurple/30 transition-all space-y-3 relative overflow-hidden flex flex-col justify-between h-[180px]">
+                    <div class="absolute top-0 right-0 p-3 font-mono text-xs text-accentpurple font-bold bg-purple-950/25 border-b border-l border-zinc-900 rounded-bl-lg select-none">
+                        Avancé
+                    </div>
+                    <div class="flex items-center gap-2.5">
+                        <span class="text-2xl">🪐</span>
+                        <div>
+                            <h3 class="text-xs font-bold text-white">Tauri Rust + React.js</h3>
+                            <span class="text-[9px] font-mono text-zinc-500">Applications de bureau légères</span>
+                        </div>
+                    </div>
+                    <p class="text-zinc-400 text-[11px] leading-relaxed">
+                        Création d'outils desktop performants. Backend asynchrone Rust communicant avec un frontend web rapide et interactif programmé en React.
+                    </p>
+                    <div class="pt-2 border-t border-zinc-900 flex items-center justify-between text-[10px] font-mono">
+                        <span class="text-zinc-500">Communication :</span>
+                        <span class="text-accentpurple font-bold">IPC Bridges</span>
+                    </div>
+                </div>
+
+                <!-- Skill 5: Architecture Hard & Soft -->
+                <div class="glass-panel p-5 rounded-xl border border-zinc-900 hover:border-accentcyan/30 transition-all space-y-3 relative overflow-hidden flex flex-col justify-between h-[180px]">
+                    <div class="absolute top-0 right-0 p-3 font-mono text-xs text-accentcyan font-bold bg-cyan-950/25 border-b border-l border-zinc-900 rounded-bl-lg select-none">
+                        Élite
+                    </div>
+                    <div class="flex items-center gap-2.5">
+                        <span class="text-2xl">💻</span>
+                        <div>
+                            <h3 class="text-xs font-bold text-white">Architecture CPU / ISA</h3>
+                            <span class="text-[9px] font-mono text-zinc-500">Analyse structurelle bas-niveau</span>
+                        </div>
+                    </div>
+                    <p class="text-zinc-400 text-[11px] leading-relaxed">
+                        Conception et routage logique d'ALU, de décodeurs multiples d'instructions, de registres asynchrones, d'ISA personnalisé et de micro-codes.
+                    </p>
+                    <div class="pt-2 border-t border-zinc-900 flex items-center justify-between text-[10px] font-mono">
+                        <span class="text-zinc-500">Cible matérielle :</span>
+                        <span class="text-accentcyan font-bold">Tang Nano FPGA</span>
+                    </div>
+                </div>
+
+                <!-- Skill 6: Sécurité & Pentest -->
+                <div class="glass-panel p-5 rounded-xl border border-zinc-900 hover:border-red-500/30 transition-all space-y-3 relative overflow-hidden flex flex-col justify-between h-[180px]">
+                    <div class="absolute top-0 right-0 p-3 font-mono text-xs text-red-500 font-bold bg-red-950/25 border-b border-l border-zinc-900 rounded-bl-lg select-none">
+                        Passionné
+                    </div>
+                    <div class="flex items-center gap-2.5">
+                        <span class="text-2xl">🛡️</span>
+                        <div>
+                            <h3 class="text-xs font-bold text-white">Sécurité Logique</h3>
+                            <span class="text-[9px] font-mono text-zinc-500">Isolation de signaux système</span>
+                        </div>
+                    </div>
+                    <p class="text-zinc-400 text-[11px] leading-relaxed">
+                        Application des règles de sécurité de l'OWASP au niveau applicatif et mise en place de sécurités physiques d'isolation de clock au niveau matériel.
+                    </p>
+                    <div class="pt-2 border-t border-zinc-900 flex items-center justify-between text-[10px] font-mono">
+                        <span class="text-zinc-500">Clock isolation :</span>
+                        <span class="text-red-500 font-bold">Transistors P</span>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- FULL PAGE DOCUMENT READING MODE STORAGE (Hidden by default, used when continuous page mode is activated) -->
+    <div id="continuous-full-doc-template" class="hidden">
+        <div class="space-y-12 max-w-4xl mx-auto py-10 px-4">
+            
+            <div class="text-center space-y-3 border-b border-zinc-900 pb-8">
+                <span class="text-xs font-mono text-accentcyan uppercase tracking-widest">DOCUMENTATION COMPLÈTE DU SYSTÈME</span>
+                <h1 class="text-3xl font-extrabold text-white">Cpu-32-Bits-RISC-V-Project-MSL5P</h1>
+                <p class="text-sm font-mono text-zinc-500">Rapport technique global de conception - Ilyess (13 ans)</p>
+            </div>
+
+            <!-- Block 1 -->
+            <div class="space-y-3 border-b border-zinc-900/40 pb-6">
+                <h3 class="text-lg font-bold text-accentcyan font-mono">01_Le_Projet_Global.md</h3>
+                <p>Mon but est de créer un CPU 32 bits entièrement fait par moi. Je ne copie personne, je crée tout avec mes propres idées et ma logique.</p>
+                <p>Depuis longtemps, je m'intéresse au fonctionnement réel des ordinateurs et à l'électronique logique. Au lieu de juste utiliser des programmes, j'aime comprendre comment une machine fonctionne à l'intérieur.</p>
+                <p>Mon age est actuellement 13ans et le Projet et en court de devloppement sa fait 6-7jour que j'y travaille dessu environ 1 a 6h par jours. Ma technique faire minimum 2-3jour je fait tou seul si arive pas j'ai le droit de me rensenier sur les methode. C'est un domaine que je connait particulierment bien car j'y suis passionné depuit tou petit vere mes 5ans (bricolage carton robotique 😂).</p>
+                <p>Pourquoi j'ai utiliser RISC-V et pas cree ma propre architecture ? car cargo supporte RISC-V et RUST c'est mon langage preferer je ne peux pas utiliser c/c++ après ça impossible du coup créer une architecture ce sera un plan pour plus tard 😉.</p>
+                <p>MON Projet sera bientot en FULL opensource pour ce qui veut apprendre comme moi ou simplement voir mon travail dans mon projet je laisse toutes mes erreurs sauf mes très anciennes que j'ai supprimées par erreur 😭, du coup vous pouvez voir les erreurs que j'ai effectuées. Le projet sera opensource lorsqu'il sera fini.</p>
+            </div>
+
+            <!-- Block 2 -->
+            <div class="space-y-3 border-b border-zinc-900/40 pb-6">
+                <h3 class="text-lg font-bold text-accentgreen font-mono">02_L_ALU_Commencement.md</h3>
+                <p>J'ai commencé par l'ALU (Arithmetic Logic Unit), parce que c'était déjà un domaine que je maîtrisais bien.</p>
+                <p>Vers mes 12 ans, j'avais déjà créé une calculatrice 8 bits entièrement sur Minecraft, construite de zéro uniquement avec de la logique Redstone et des FULL ADDER. J'avais développé ce projet en environ 3 jours juste par passion.</p>
+                <p>Au début, je faisais énormément de schémas sur papier pendant les temps morts en cours. Je réfléchissais directement à la logique des additions binaires :</p>
+                <div class="bg-zinc-950 p-3 rounded font-mono text-xs space-y-1 text-zinc-400">
+                    <p>1 + 1 = 10</p>
+                    <p>1 + 0 = 1</p>
+                    <p class="text-accentgreen">// Je me suis dit que quand les deux entrées sont à 1, une retenue devait être créée.</p>
+                </div>
+                <p>J'ai alors utilisé une porte logique AND pour gérer cette retenue : 1 AND 1 = 1, toutes les autres combinaisons donnent 0. Premier objectif validé ✅.</p>
+                <p>Ensuite, j'ai commencé à imaginer plusieurs versions de mon ADDER directement sur papier. Je faisais énormément de tests théoriques avant même de construire les circuits.</p>
+                <p>Mais un problème est rapidement apparu : beaucoup de mes concepts fonctionnaient sur papier, mais ne convenaient pas aux systèmes industriels ou aux logiciels de simulation utilisant des portes logiques "propres". Du coup, j'ai décidé d'adapter toute mon ALU à une architecture plus stable et plus réaliste.</p>
+                <p>En travaillant sur mon architecture, j'ai aussi ajouté plusieurs sécurités logiques. Le but était d'éviter que certaines parties du CPU exécutent des calculs ou changent d'état sans qu'une instruction le demande réellement.</p>
+            </div>
+
+            <!-- Block 3 -->
+            <div class="space-y-3 border-b border-zinc-900/40 pb-6">
+                <h3 class="text-lg font-bold text-accentcyan font-mono">03_Le_Full_Adder.md</h3>
+                <p>Après ça, je suis passé au FULL ADDER.</p>
+                <p>Le but était maintenant de gérer :</p>
+                <p class="pl-4 font-mono text-xs text-zinc-400">• Les deux bits d'entrée de base (A et B) ;<br>• Mais aussi la retenue provenant de l'addition précédente (Carry-In).</p>
+                <p>C'est ce qui permet ensuite de relier plusieurs additions ensemble pour construire une vraie architecture capable de gérer plusieurs bits.</p>
+            </div>
+
+            <!-- Block 4 -->
+            <div class="space-y-3 border-b border-zinc-900/40 pb-6">
+                <h3 class="text-lg font-bold text-red-400 font-mono">04_Le_SUB_L_Enfer.md</h3>
+                <p>J'étais super content de mon FULL ADDER. Mais ensuite je suis passé au SUB… et c'est là que les vrais problèmes ont commencé.</p>
+                <p>J'avais deux choix :</p>
+                <p>• <strong>Solution 1 :</strong> Utiliser la technique A + (!B) utilisée dans beaucoup de vrais processeurs. Mais au début, je ne la considérais pas comme totalement fiable.</p>
+                <p>• <strong>Solution 2 :</strong> Créer tout le système de soustraction moi-même de zéro.</p>
+                <p class="italic text-zinc-400">Et évidemment… c'est cette solution que j'ai choisie pour le défi ! 😭</p>
+                <p>Au début, mon SUB fonctionnait parfaitement. Le vrai problème est arrivé quand j'ai commencé le FULL SUB, donc la gestion des retenues, des dettes et des emprunts binaires. Là, c'était un enfer. J'ai essayé énormément de techniques : sécurités logiques, protections, nouvelles structures, systèmes de contrôle.</p>
+                <div class="p-3 bg-red-950/20 border border-red-900/30 rounded font-mono text-xs text-red-300">
+                    <p>🐛 Les deux bugs qui m'ont détruit :</p>
+                    <p>1. Dans certains cas négatifs très précis : 0 - 1 + 0 - 0, le système me donnait -3 en décimal. Ce qui était totalement faux.</p>
+                    <p>2. La gestion des emprunts et des dettes binaires n'était pas stable.</p>
+                </div>
+                <p>Et là… j'étais vraiment proche d'abandonner.</p>
+            </div>
+
+            <!-- Block 5 -->
+            <div class="space-y-3 border-b border-zinc-900/40 pb-6">
+                <h3 class="text-lg font-bold text-accentgreen font-mono">05_La_Vraie_Solution.md</h3>
+                <p>J'ai fait une pause de 2 jours pour vider ma tête. Puis un matin, je reviens avec une énorme énergie. Et là… énorme déclic.</p>
+                <p>Je reprends toute ma logique du FULL ADDER. C'est à ce moment-là que mon FULL ADDER V3 stable est né. Plus expérimental. Vraiment stable.</p>
+                <p>Ensuite je crée la V2 du SUB avec une technique un peu… barbare 😭 : 9 portes XOR. Oui. 9 XOR ! J'étais moi-même en train de rire devant ce que j'avais créé juste pour sécuriser certains cas négatifs. Malheureusement, j'ai supprimé cette version sans prendre de capture ou de photo. Et aujourd'hui encore je le regrette.</p>
+                <p>Puis j'ai eu un autre déclic. J'ai retesté la fameuse méthode : <code class="text-accentcyan font-bold">A + (-B)</code>. Au début ça ne fonctionnait pas correctement. Puis j'ai décidé de dupliquer certains modules et de reconstruire la logique autrement. Et là… tout fonctionne !</p>
+                <p>C'est aussi à ce moment-là que j'ai compris quelque chose d'important : la retenue n'était pas seulement une retenue. C'était aussi elle qui indiquait si le système était dans un état négatif ou non.</p>
+                <p><strong>Architecture scalable :</strong> Une fois ce problème réglé, tout est allé extrêmement vite. Sous l'effet de la joie, j'ai créé mon ALU 4 bits, puis 8 bits, puis 16 bits en environ 10 minutes ! Parce que dès le début, j'avais pensé toute mon architecture comme un système modulaire et scalable. Chaque bloc pouvait être réutilisé et agrandi facilement.</p>
+            </div>
+
+            <!-- Block 6 -->
+            <div class="space-y-3 border-b border-zinc-900/40 pb-6">
+                <h3 class="text-lg font-bold text-accentrust font-mono">06_Cablage_Monstrueux.md</h3>
+                <p>Maintenant que toute la logique ADD/SUB était enfin stable — ce qui m'a quand même pris 5 jours à cause des passages entre la V1, V2 puis V3 — je suis passé à la suite.</p>
+                <p>Il me restait : un décodeur 3 bits et les portes logiques AND, OR et XOR en 32 exemplaires chacune. Et là… c'était une étape monstrueuse. Ça m'a pris environ 6 heures de travail quasiment non stop. J'ai littéralement sacrifié une journée entière juste pour cette partie : toute une journée + encore 2 heures le lendemain.</p>
+                <div class="p-4 bg-zinc-900/60 rounded border border-zinc-850">
+                    <p class="font-mono text-xs">Câblage de l'ALU : 66 entrées (ADD/SUB) + 64 (XOR) + 64 (AND) + 64 (OR) = <strong>258 entrées</strong> à relier à la main !</p>
+                </div>
+                <p>Du coup j'ai choisi le style de câblage que je préfère : des fils propres, organisés, avec des chemins précis, sans croisements inutiles. Et honnêtement… à la fin ça devient presque de l'art 😭.</p>
+                <p>Dans mon logiciel, j'essaie toujours d'utiliser le moins de fils possible et d'avoir un rendu visuel propre. Mais avant ça, j'avais pensé à utiliser des systèmes de bus simplifiés. Ça aurait été beaucoup plus simple et beaucoup moins fatigant. Mais j'ai volontairement refusé cette solution. Je voulais vraiment ressentir ce que ça fait de construire une architecture manuellement, comme un vrai concepteur de circuits. Du coup j'ai tout relié à la main.</p>
+                <p>Par contre, pour les sorties finales, j'ai quand même utilisé un vrai bus. Parce que là, ça devenait logique pour l'architecture finale de l'ALU. J'ai donc relié tous les bus ensemble — 4 au total — avec des portes OR à 4 entrées afin d'obtenir une seule sortie bus de 32 bits.</p>
+                <p>⚡ Performance : Pour les curieux, cette ALU a une latence d'environ 5370 ns, ce qui donne environ 180 kHz. Et honnêtement, pour ma première ALU entièrement terminée, je trouve ça vraiment correct, surtout que j'avais prévu un objectif de seulement 100 kHz pour mon CPU !</p>
+            </div>
+
+            <!-- Block 7 -->
+            <div class="space-y-3 border-b border-zinc-900/40 pb-6">
+                <h3 class="text-lg font-bold text-accentcyan font-mono">07_Les_Registres_Et_Bus.md</h3>
+                <p>Puis après… LES REGISTRES 😭 ! Et étonnamment, cette partie était vraiment fun. Avec les bascules à relier, les copier-coller, les connexions… c'était presque reposant comparé au reste.</p>
+                <p>Du coup j'ai utilisé la méthode classique que tout le monde utilise pour les registres. Et j'ai créé un registre capable de stocker 32 bits. Puis ensuite, j'ai transformé ce système en un registre capable de stocker 32 nombres de 32 bits grâce à un décodeur 5 bits que j'ai conçu.</p>
+                <p>Le système du décodeur 5 bits m'a vraiment fasciné. Parce qu'il me rappelait une logique que j'avais déjà expérimentée quand j'étais plus petit avec des LEGO et des systèmes modulaires. Du coup celui-là, je l'ai entièrement fait à la main.</p>
+                <p>Mais il restait encore un problème : mon registre pouvait stocker 32 nombres de 32 bits, mais il ne possédait qu'un seul bus d'entrée/sortie. Et pour mon ALU, ça devenait vite problématique. Du coup j'ai créé un autre module basé sur ce registre afin de le transformer en système à double bus entrée/sortie. Et honnêtement, cette partie était plutôt simple. Beaucoup de copier-coller, du reliage et surtout de l'organisation pour éviter d'envoyer les valeurs deux fois.</p>
+                <p>Pour les curieux, ce registre a une latence d'environ 3380 ns. Ce qui reste totalement acceptable pour mon objectif de fréquence.</p>
+            </div>
+
+            <!-- Block 8 -->
+            <div class="space-y-3 border-b border-zinc-900/40 pb-6">
+                <h3 class="text-lg font-bold text-accentrust font-mono">08_La_Clock_Et_La_ROM.md</h3>
+                <p>J'ai finalement utilisé la clock de base du logiciel. Je n'avais pas vraiment le choix pour une future intégration dans une Tang Nano 9K. Du coup j'ai surtout travaillé sur le contrôle de cette clock. J'ai ajouté un transistor P à la sortie afin de pouvoir stopper certaines parties du système. Comme ça, plus tard, je pourrai aussi réfléchir à de l'économie d'énergie.</p>
+                <p>Le dernier élément sur lequel j'ai commencé à travailler : la ROM. Mais pour l'instant… elle ne contient quasiment rien 😭. Là je suis surtout en phase d'analyse pour préparer la suite du CPU. Par contre, même si je comprends comment une ROM fonctionne réellement, je ne peux pas totalement la recréer de zéro dans ce projet. Il y a deux raisons : Le logiciel ne possède pas les composants mémoire transistorisés nécessaires. Je devrai utiliser la ROM native du logiciel pour pouvoir compiler correctement le projet dans la Tang Nano 9K.</p>
+            </div>
+
+            <!-- Block 9 -->
+            <div class="space-y-3 border-b border-zinc-900/40 pb-6">
+                <h3 class="text-lg font-bold text-red-400 font-mono">09_La_Catastrophe.md</h3>
+                <p>Un jour, je me suis réveillé et Windows commençait vraiment à me fatiguer : lenteurs, bugs, système lourd, problèmes constants. Du coup, j'ai décidé de migrer encore une fois vers Linux 😭. Et cette fois, je suis parti sur Arch Linux avec Hyprland.</p>
+                <p>Mais le problème, c'est que mon PC utilise un CPU Gemini Lake avec un ancien écran. Et là… catastrophe 💀. Problèmes d'affichage. Drivers. Écran qui bug. Affichage qui saute. Système instable. Du coup j'ai passé énormément de temps à corriger tous les problèmes liés à la migration. Et pendant cette migration… j'ai sauvegardé les mauvais fichiers.</p>
+                <p class="text-red-400 font-bold">Et là… TOUT perdu 😭. Le CPU. L'ALU. Les registres. Le câblage. Les versions. Les tests. Tout. Le seul truc que j'avais encore : mes feuilles papier.</p>
+                <p>Honnêtement, à ce moment-là, j'étais vraiment au bord d'abandonner. Le projet était devenu énorme à mes yeux. J'avais déjà investi environ 16 heures de travail dedans. Et pour moi, c'était énorme. J'ai essayé de récupérer les fichiers. Impossible. J'ai essayé plusieurs méthodes. Toujours impossible.</p>
+                <p>Du coup, j'ai préféré faire une pause. Parce que je sais que prendre des décisions quand je suis mentalement détruit, c'est rarement une bonne idée. Alors j'ai arrêté pendant 1 jour complet.</p>
+            </div>
+
+            <!-- Block 10 -->
+            <div class="space-y-3 border-b border-zinc-900/40 pb-6">
+                <h3 class="text-lg font-bold text-accentgreen font-mono">10_La_Renaissance_4bit.md</h3>
+                <p>Puis un matin… je me suis réveillé. Et là, au lieu d'abandonner, j'ai repris mes feuilles. J'ai recommencé toute l'architecture en 4 bits pour repartir sur des bases propres et vérifier toute ma logique correctement. Et en refaisant tout, j'ai commencé à réfléchir à plein de nouvelles optimisations ! Par exemple, mon ADD utilisait maintenant un transistor de moins 😭. J'ai aussi totalement repensé le SUB.</p>
+                <p>Parce qu'entre-temps, j'avais oublié certaines parties de mes anciennes versions. Mais même si j'avais oublié certains détails, toutes les connaissances et la logique que j'avais acquises étaient toujours dans ma tête. Du coup, j'ai tout recommencé. FULL ADDER. FULL SUB. ALU. Décodeurs. Registres avancés. Clock. Tout. Et cette fois… encore plus vite qu'avant. J'ai même réussi à intégrer ma propre ISA. Et maintenant mon CPU est bientôt terminé 😭🔥.</p>
+                <p>Actuellement il est en phase beta : quelques bugs dans l'ALU, certains mauvais branchements, quelques corrections restantes. Mais maintenant, pour la première fois… je travaille enfin sur mon propre langage de programmation.</p>
+            </div>
+
+            <!-- Block 11 -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-bold text-accentpurple font-mono">11_Mon_ISA_Custom.md</h3>
+                <p>Et là… vous allez peut-être rire 😭 : parce que pour un CPU 4 bits… mes instructions font 16 bits 💀 ! Oui. 16 bits.</p>
+                <p>Mais ce n'est absolument pas au hasard. J'ai réfléchi à cette architecture pendant la nuit entière avant de faire ce choix. Le problème, c'est que ma mémoire est statique. Je ne peux pas décider dynamiquement de sa taille comme sur un vrai système moderne. Du coup, j'ai préféré créer une ISA plus large et plus confortable dès le début : 8 bits pour les données, 8 bits pour les opcodes et le contrôle. Total : 16 bits par instruction.</p>
+                
+                <h4 class="font-bold text-white text-xs uppercase mt-3">🧩 Détail des champs :</h4>
+                <div class="border border-zinc-800 rounded overflow-hidden">
+                    <table class="w-full text-xs font-mono">
+                        <tr class="bg-zinc-900 text-accentcyan border-b border-zinc-800"><th class="p-2 text-left">Bits</th><th class="p-2 text-left">Nom</th><th class="p-2 text-left">Description</th></tr>
+                        <tr><td class="p-2">0 - 1</td><td class="p-2">Sélecteur</td><td class="p-2">01 = ALU, 10 = Mémoire</td></tr>
+                        <tr><td class="p-2">2 - 4</td><td class="p-2">Décodeur</td><td class="p-2">ALU: opération. Mémoire: registre destination</td></tr>
+                        <tr><td class="p-2">5</td><td class="p-2">Action FINISH</td><td class="p-2">1 = Écraser la donnée du registre</td></tr>
+                        <tr><td class="p-2">6 - 7</td><td class="p-2">Réservé</td><td class="p-2">Debug futur ou extensions</td></tr>
+                        <tr><td class="p-2">8 - 11</td><td class="p-2">Opérande 1</td><td class="p-2">Premier nombre (4 bits)</td></tr>
+                        <tr><td class="p-2">12 - 15</td><td class="p-2">Opérande 2</td><td class="p-2">Deuxième nombre (4 bits)</td></tr>
+                    </table>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div>
+                        <h4 class="font-bold text-accentgreen text-xs uppercase mb-1">⚡ ALU (Sélecteur = 01)</h4>
+                        <table class="w-full text-xs font-mono border border-zinc-800 rounded">
+                            <tr class="bg-zinc-900 text-accentgreen"><th class="p-1.5 text-left">Code</th><th class="p-1.5 text-left">Opération</th></tr>
+                            <tr><td class="p-1.5">000</td><td class="p-1.5">ADD</td></tr>
+                            <tr><td class="p-1.5">100</td><td class="p-1.5">SUB</td></tr>
+                            <tr><td class="p-1.5">010</td><td class="p-1.5">OR</td></tr>
+                            <tr><td class="p-1.5">110</td><td class="p-1.5">AND</td></tr>
+                            <tr><td class="p-1.5">001</td><td class="p-1.5">XOR</td></tr>
+                        </table>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-accentcyan text-xs uppercase mb-1">💾 Mémoire (Sélecteur = 10)</h4>
+                        <table class="w-full text-xs font-mono border border-zinc-800 rounded">
+                            <tr class="bg-zinc-900 text-accentcyan"><th class="p-1.5 text-left">Code</th><th class="p-1.5 text-left">Action</th></tr>
+                            <tr><td class="p-1.5">000</td><td class="p-1.5">Stocker dans R1</td></tr>
+                            <tr><td class="p-1.5">001</td><td class="p-1.5">Stocker dans R2</td></tr>
+                            <tr><td class="p-1.5">010</td><td class="p-1.5">Stocker dans R3</td></tr>
+                            <tr><td class="p-1.5">011</td><td class="p-1.5">Stocker dans R4</td></tr>
+                        </table>
+                    </div>
+                </div>
+
+                <h4 class="font-bold text-white text-xs mt-4">🎯 Exemple concret :</h4>
+                <p>Pour stocker 5 + 3 dans R1: Sélecteur=01, Décodeur=000, FINISH=1, Réservé=00, Opérande1=0101, Opérande2=0011</p>
+                <p class="font-mono text-xs text-accentgreen">Résultat binaire : 0100010010100011</p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- LOGIC INTERACTIVE JAVASCRIPT ENGINE -->
+    <script>
+        lucide.createIcons();
+
+        // 16-bit instruction array
+        let currentInstructionBits = Array(16).fill(0);
+        let audioContext = null;
+        let playFX = true;
+
+        function initAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playClickSound(freq = 400, type = 'sine', duration = 0.05) {
+            if (!playFX) return;
+            try {
+                initAudio();
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioContext.currentTime);
+                
+                gain.gain.setValueAtTime(0.04, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + duration);
+                
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                
+                osc.start();
+                osc.stop(audioContext.currentTime + duration);
+            } catch(e) {
+                console.log('Audio Context Error', e);
+            }
+        }
+
+        function toggleAudioSystem() {
+            playFX = !playFX;
+            const btn = document.getElementById('sound-btn');
+            if (playFX) {
+                btn.innerHTML = `<i data-lucide="volume-2" class="w-4 h-4"></i><span>FX: ON</span>`;
+                btn.classList.add('text-accentgreen');
+                btn.classList.remove('text-zinc-500');
+                playClickSound(520, 'triangle', 0.1);
+            } else {
+                btn.innerHTML = `<i data-lucide="volume-x" class="w-4 h-4"></i><span>FX: OFF</span>`;
+                btn.classList.remove('text-accentgreen');
+                btn.classList.add('text-zinc-500');
+            }
+            lucide.createIcons();
+        }
+
+        // WORKSPACE TAB SWITCHER
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(section => {
+                section.classList.add('hidden');
+                section.classList.remove('block');
+            });
+            
+            const targetSection = document.getElementById(`section-${tabName}`);
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+                targetSection.classList.add('block');
+            }
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('text-accentgreen', 'bg-zinc-900/80');
+                btn.classList.add('text-zinc-400');
+            });
+
+            const activeBtn = document.getElementById(`tab-${tabName}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-zinc-400');
+                activeBtn.classList.add('text-accentgreen', 'bg-zinc-900/80');
+            }
+
+            const titleEl = document.getElementById('active-window-title');
+            titleEl.textContent = `hyprland: active_node_${tabName}.sh`;
+
+            playClickSound(300, 'sine', 0.08);
+            addTerminalLog(`Workspace switched to tab: ${tabName.toUpperCase()}`);
+        }
+
+        function addTerminalLog(message, type = 'SYS') {
+            const screen = document.getElementById('terminal-screen');
+            if (!screen) return;
+            const time = new Date().toISOString().slice(11, 19);
+            const line = document.createElement('div');
+            
+            let colorClass = 'text-accentcyan';
+            if (type === 'WARN') colorClass = 'text-accentpurple';
+            if (type === 'ALERT') colorClass = 'text-red-500';
+            if (type === 'OK') colorClass = 'text-accentgreen';
+
+            line.innerHTML = `<span class="text-zinc-500">[${time}]</span> <span class="${colorClass} font-bold">[${type}]</span> ${message}`;
+            screen.appendChild(line);
+            screen.scrollTop = screen.scrollHeight;
+        }
+
+        // MATRIX BACKGROUND
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+        function resizeMatrixCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeMatrixCanvas();
+        window.addEventListener('resize', resizeMatrixCanvas);
+
+        const matrixChars = "01010101011100110001010011010101".split("");
+        const fontSize = 14;
+        let columns = canvas.width / fontSize;
+        let rainDrops = [];
+        for (let x = 0; x < columns; x++) rainDrops[x] = 1;
+
+        function drawMatrixRain() {
+            ctx.fillStyle = 'rgba(5, 5, 7, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#22c55e';
+            ctx.font = fontSize + 'px monospace';
+            for (let i = 0; i < rainDrops.length; i++) {
+                const text = matrixChars[Math.floor(Math.random() * matrixChars.length)];
+                ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
+                if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    rainDrops[i] = 0;
+                }
+                rainDrops[i]++;
+            }
+        }
+        setInterval(drawMatrixRain, 45);
+
+        // CPU live updates
+        setInterval(() => {
+            const cpuEl = document.getElementById('cpu-stat');
+            if (cpuEl) {
+                const percentage = Math.floor(Math.random() * 12) + 7;
+                cpuEl.textContent = `${percentage}%`;
+            }
+        }, 3000);
+
+        // Clock Time ticking
+        setInterval(() => {
+            const timeEl = document.getElementById('system-time');
+            if (timeEl) {
+                const now = new Date();
+                timeEl.textContent = now.toTimeString().split(' ')[0];
+            }
+        }, 1000);
+
+
+        // ==========================================
+        // VIRTUAL IDE DOCUMENTATION READER ENGINE
+        // ==========================================
+        const fileOrder = [
+            'intro', 'alu', 'adder', 'sub', 'solution', 
+            'cablag', 'registres', 'clock', 'catastrophe', 
+            'renaissance', 'isa'
+        ];
+        
+        const fileNames = {
+            'intro': '01_Le_Projet_Global.md',
+            'alu': '02_L_ALU_Commencement.md',
+            'adder': '03_Le_Full_Adder.md',
+            'sub': '04_Le_SUB_L_Enfer.md',
+            'solution': '05_La_Vraie_Solution.md',
+            'cablag': '06_Cablage_Monstrueux.md',
+            'registres': '07_Les_Registres_Et_Bus.md',
+            'clock': '08_La_Clock_Et_La_ROM.md',
+            'catastrophe': '09_La_Catastrophe.md',
+            'renaissance': '10_La_Renaissance_4bit.md',
+            'isa': '11_Mon_ISA_Custom.md'
+        };
+
+        let currentFileKey = 'intro';
+        let readingMode = 'editor'; // 'editor' (split with explorer) or 'full' (continuous layout)
+
+        // Store copy of individual chapters to reuse
+        let chapterCacheHTML = {};
+        fileOrder.forEach(key => {
+            const el = document.getElementById(`content-${key}`);
+            if (el) {
+                chapterCacheHTML[key] = el.innerHTML;
+            }
+        });
+
+        // Switch Reading Mode
+        function toggleReadingMode(mode) {
+            readingMode = mode;
+            const sidebar = document.getElementById('project-sidebar');
+            const viewerContainer = document.getElementById('project-viewer-container');
+            const editorContentContainer = document.getElementById('editor-content-container');
+            const footer = document.getElementById('project-editor-footer');
+            const indicator = document.getElementById('editor-mode-indicator');
+            
+            const btnEditor = document.getElementById('mode-btn-editor');
+            const btnFull = document.getElementById('mode-btn-full');
+
+            playClickSound(400, 'triangle', 0.1);
+
+            if (mode === 'full') {
+                // Continuous reading mode
+                sidebar.classList.add('hidden');
+                viewerContainer.className = "lg:col-span-12 flex flex-col h-full bg-zinc-950 overflow-hidden relative";
+                footer.classList.add('hidden');
+                indicator.textContent = "Mode Continu (Une Seule Page)";
+                
+                // Style Active Buttons
+                btnEditor.className = "px-2.5 py-1 text-[11px] font-mono font-bold rounded text-zinc-400 hover:text-white transition-all flex items-center gap-1";
+                btnFull.className = "px-2.5 py-1 text-[11px] font-mono font-bold rounded bg-zinc-900 text-accentgreen border border-accentgreen/10 transition-all flex items-center gap-1";
+
+                // Merge all HTML structures inside document viewer
+                const fullTemplate = document.getElementById('continuous-full-doc-template');
+                editorContentContainer.innerHTML = fullTemplate.innerHTML;
+                document.getElementById('editor-filename').textContent = "Cpu-32-Bits-RISC-V-Project-MSL5P.md";
+            } else {
+                // Split IDE Mode
+                sidebar.classList.remove('hidden');
+                viewerContainer.className = "lg:col-span-8 flex flex-col h-full bg-zinc-950 overflow-hidden relative";
+                footer.classList.remove('hidden');
+                indicator.textContent = "Mode Éditeur (IDE)";
+
+                // Style Active Buttons
+                btnFull.className = "px-2.5 py-1 text-[11px] font-mono font-bold rounded text-zinc-400 hover:text-white transition-all flex items-center gap-1";
+                btnEditor.className = "px-2.5 py-1 text-[11px] font-mono font-bold rounded bg-zinc-900 text-accentgreen border border-accentgreen/10 transition-all flex items-center gap-1";
+
+                // Re-initialize active chapter HTML content
+                editorContentContainer.innerHTML = "";
+                fileOrder.forEach(key => {
+                    const block = document.createElement('div');
+                    block.id = `content-${key}`;
+                    block.className = `chapter-content ${key === currentFileKey ? 'block' : 'hidden'} space-y-4`;
+                    block.innerHTML = chapterCacheHTML[key];
+                    editorContentContainer.appendChild(block);
+                });
+
+                selectFile(currentFileKey);
+            }
+            lucide.createIcons();
+        }
+
+        function selectFile(fileKey) {
+            if (readingMode === 'full') return; // disabled in single page flow
+            currentFileKey = fileKey;
+            
+            document.querySelectorAll('.file-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            const sidebarBtn = document.getElementById(`file-${fileKey}`);
+            if (sidebarBtn) sidebarBtn.classList.add('active');
+
+            document.querySelectorAll('.chapter-content').forEach(block => {
+                block.classList.add('hidden');
+                block.classList.remove('block', 'page-fade-in');
+            });
+            const targetBlock = document.getElementById(`content-${fileKey}`);
+            if (targetBlock) {
+                targetBlock.classList.remove('hidden');
+                targetBlock.classList.add('block', 'page-fade-in');
+            }
+
+            document.getElementById('editor-filename').textContent = fileNames[fileKey];
+
+            const index = fileOrder.indexOf(fileKey);
+            document.getElementById('editor-page-indicator').textContent = `${index + 1} / ${fileOrder.length}`;
+
+            document.getElementById('editor-prev-btn').style.opacity = index === 0 ? '0.3' : '1';
+            document.getElementById('editor-prev-btn').style.pointerEvents = index === 0 ? 'none' : 'auto';
+            document.getElementById('editor-next-btn').style.opacity = index === fileOrder.length - 1 ? '0.3' : '1';
+            document.getElementById('editor-next-btn').style.pointerEvents = index === fileOrder.length - 1 ? 'none' : 'auto';
+
+            document.getElementById('editor-content-container').scrollTop = 0;
+
+            playClickSound(350 + (index * 25), 'sine', 0.06);
+        }
+
+        function prevChapter() {
+            const index = fileOrder.indexOf(currentFileKey);
+            if (index > 0) {
+                selectFile(fileOrder[index - 1]);
+            }
+        }
+
+        function nextChapter() {
+            const index = fileOrder.indexOf(currentFileKey);
+            if (index < fileOrder.length - 1) {
+                selectFile(fileOrder[index + 1]);
+            }
+        }
+
+        // FULLSCREEN CONTROLLERS
+        let isSemiFullscreen = false;
+
+        function toggleSemiFullscreen() {
+            isSemiFullscreen = !isSemiFullscreen;
+            const container = document.getElementById('project-workspace-container');
+            const icon = document.getElementById('semi-fs-icon');
+
+            playClickSound(500, 'triangle', 0.15);
+
+            if (isSemiFullscreen) {
+                container.classList.add('semi-fullscreen-active');
+                icon.setAttribute('data-lucide', 'minimize-2');
+                addTerminalLog("Document viewer semi-fullscreen focus mode activated.", "OK");
+            } else {
+                container.classList.remove('semi-fullscreen-active');
+                icon.setAttribute('data-lucide', 'maximize-2');
+                addTerminalLog("Document viewer semi-fullscreen focus mode restored.", "SYS");
+            }
+            lucide.createIcons();
+        }
+
+        function toggleNativeFullscreen() {
+            const container = document.getElementById('project-workspace-container');
+            playClickSound(550, 'sine', 0.12);
+            if (!document.fullscreenElement) {
+                container.requestFullscreen().then(() => {
+                    addTerminalLog("Native browser fullscreen mode activated on document node.", "OK");
+                }).catch(err => {
+                    console.log("Fullscreen request failed", err);
+                });
+            } else {
+                document.exitFullscreen();
+                addTerminalLog("Native browser fullscreen mode closed.", "SYS");
+            }
+        }
+
+
+        // ==========================================
+        // ISA SIMULATOR DECODING LOGIC
+        // ==========================================
+
+        function toggleBit(index) {
+            currentInstructionBits[index] = currentInstructionBits[index] === 0 ? 1 : 0;
+            playClickSound(currentInstructionBits[index] === 1 ? 440 : 350, 'square', 0.04);
+            updateSimulatorUI();
+        }
+
+        function loadPreset(binaryString) {
+            if (binaryString.length !== 16) return;
+            for (let i = 0; i < 16; i++) {
+                currentInstructionBits[i] = parseInt(binaryString[i]);
+            }
+            playClickSound(600, 'triangle', 0.15);
+            addTerminalLog(`Loaded instruction preset: ${binaryString}`, 'OK');
+            updateSimulatorUI();
+        }
+
+        function updateSimulatorUI() {
+            // Update individual bit buttons style
+            for (let i = 0; i < 16; i++) {
+                const btn = document.getElementById(`bit-${i}`);
+                if (!btn) continue;
+                
+                btn.textContent = currentInstructionBits[i];
+                if (currentInstructionBits[i] === 1) {
+                    btn.classList.remove('bg-zinc-950', 'border-zinc-900', 'text-zinc-500');
+                    if (i === 0 || i === 1) {
+                        btn.classList.add('bg-white/10', 'border-white', 'text-white');
+                    } else if (i >= 2 && i <= 4) {
+                        btn.classList.add('bg-accentgreen/10', 'border-accentgreen', 'text-accentgreen');
+                    } else if (i === 5) {
+                        btn.classList.add('bg-accentpurple/10', 'border-accentpurple', 'text-accentpurple');
+                    } else if (i === 6 || i === 7) {
+                        btn.classList.add('bg-accentcyan/10', 'border-accentcyan', 'text-accentcyan');
+                    } else {
+                        btn.classList.add('bg-accentrust/10', 'border-accentrust', 'text-accentrust');
+                    }
+                } else {
+                    btn.className = "flex-1 py-2.5 rounded bg-zinc-950 border border-zinc-900 text-xs font-mono font-bold hover:border-zinc-800 text-zinc-500 transition-all";
+                }
+            }
+
+            // Format binaire global
+            let part1 = currentInstructionBits.slice(0, 2).join("");
+            let part2 = currentInstructionBits.slice(2, 5).join("");
+            let part3 = currentInstructionBits.slice(5, 6).join("");
+            let part4 = currentInstructionBits.slice(6, 8).join("");
+            let part5 = currentInstructionBits.slice(8, 12).join("");
+            let part6 = currentInstructionBits.slice(12, 16).join("");
+            
+            const displayBin = `${part1} ${part2} ${part3} ${part4} ${part5} ${part6}`;
+            
+            // update all display string containers
+            document.querySelectorAll('#binary-string-display').forEach(el => {
+                el.textContent = displayBin;
+            });
+
+            // Decodage du Sélecteur
+            const selectorBits = currentInstructionBits.slice(0, 2).join("");
+            let selectorType = "INVALIDE";
+            let selectorDesc = "Code d'opération inconnu";
+            let selectorColor = "text-red-500";
+            
+            if (selectorBits === "01") {
+                selectorType = "01 (ALU)";
+                selectorDesc = "Unité Arithmétique & Logique";
+                selectorColor = "text-accentgreen";
+                document.getElementById('gate-led-selector').className = "w-2 h-2 rounded-full bg-accentgreen inline-block";
+                document.getElementById('gate-led-alu').className = "w-2 h-2 rounded-full bg-accentgreen inline-block";
+                document.getElementById('gate-led-reg').className = "w-2 h-2 rounded-full bg-zinc-800 inline-block";
+            } else if (selectorBits === "10") {
+                selectorType = "10 (MÉMOIRE)";
+                selectorDesc = "Gestion d'écriture des Registres";
+                selectorColor = "text-accentcyan";
+                document.getElementById('gate-led-selector').className = "w-2 h-2 rounded-full bg-accentcyan inline-block";
+                document.getElementById('gate-led-alu').className = "w-2 h-2 rounded-full bg-zinc-800 inline-block";
+                document.getElementById('gate-led-reg').className = "w-2 h-2 rounded-full bg-accentcyan inline-block";
+            } else {
+                document.getElementById('gate-led-selector').className = "w-2 h-2 rounded-full bg-red-500 inline-block";
+                document.getElementById('gate-led-alu').className = "w-2 h-2 rounded-full bg-zinc-800 inline-block";
+                document.getElementById('gate-led-reg').className = "w-2 h-2 rounded-full bg-zinc-800 inline-block";
+            }
+
+            document.getElementById('decode-selector-val').textContent = selectorType;
+            document.getElementById('decode-selector-desc').textContent = selectorDesc;
+            document.getElementById('decode-selector-desc').className = `text-[9px] font-mono ${selectorColor}`;
+
+            // Decodage du Décodeur (Opcodes / Registres)
+            const decoderBits = currentInstructionBits.slice(2, 5).join("");
+            let decoderName = "INCONNU";
+            let decoderDesc = "Opération non implémentée";
+            
+            if (selectorBits === "01") { // Mode ALU
+                if (decoderBits === "000") { decoderName = "ADD"; decoderDesc = "Additionneur V3"; }
+                else if (decoderBits === "100") { decoderName = "SUB"; decoderDesc = "Soustracteur stable"; }
+                else if (decoderBits === "010") { decoderName = "OR"; decoderDesc = "Portes OR 32 exemplaires"; }
+                else if (decoderBits === "110") { decoderName = "AND"; decoderDesc = "Portes AND 32 exemplaires"; }
+                else if (decoderBits === "001") { decoderName = "XOR"; decoderDesc = "Portes XOR 32 exemplaires"; }
+            } else if (selectorBits === "10") { // Mode Mémoire
+                if (decoderBits === "000") { decoderName = "Stocker R1"; decoderDesc = "Registre de destination R1"; }
+                else if (decoderBits === "001") { decoderName = "Stocker R2"; decoderDesc = "Registre de destination R2"; }
+                else if (decoderBits === "010") { decoderName = "Stocker R3"; decoderDesc = "Registre de destination R3"; }
+                else if (decoderBits === "011") { decoderName = "Stocker R4"; decoderDesc = "Registre de destination R4"; }
+            }
+
+            document.getElementById('decode-decoder-val').textContent = decoderBits + ` (${decoderName})`;
+            document.getElementById('decode-decoder-desc').textContent = decoderDesc;
+
+            // Decodage FINISH
+            const finishBit = currentInstructionBits[5];
+            document.getElementById('decode-finish-val').textContent = finishBit === 1 ? "Actif (1)" : "Inactif (0)";
+            document.getElementById('decode-finish-desc').textContent = finishBit === 1 ? "Écrase la donnée" : "Pas d'écriture finale";
+
+            // Decodage des opérandes
+            const op1Bin = currentInstructionBits.slice(8, 12).join("");
+            const op2Bin = currentInstructionBits.slice(12, 16).join("");
+            
+            const op1Dec = parseInt(op1Bin, 2);
+            const op2Dec = parseInt(op2Bin, 2);
+
+            document.getElementById('decode-op1-bin').textContent = op1Bin;
+            document.getElementById('decode-op1-dec').textContent = `Val: ${op1Dec}`;
+            
+            document.getElementById('decode-op2-bin').textContent = op2Bin;
+            document.getElementById('decode-op2-dec').textContent = `Val: ${op2Dec}`;
+
+            // Calcul du Processeur
+            let formula = "...";
+            let opSymbol = "?";
+            let resultDec = 0;
+            let flagStr = "[FLAG: OK / Stable]";
+
+            if (selectorBits === "01") { // ALU Calcul
+                if (decoderName === "ADD") {
+                    opSymbol = "+";
+                    resultDec = op1Dec + op2Dec;
+                    formula = `${op1Dec} + ${op2Dec}`;
+                    if (resultDec > 15) {
+                        flagStr = "[OVERFLOW 4-bits!]";
+                        resultDec = resultDec & 15;
+                    }
+                } else if (decoderName === "SUB") {
+                    opSymbol = "-";
+                    resultDec = op1Dec - op2Dec;
+                    formula = `${op1Dec} - ${op2Dec}`;
+                    if (resultDec < 0) {
+                        flagStr = "[NEGATIF! Emprunt Actif]";
+                        resultDec = (resultDec + 16) & 15;
+                    }
+                } else if (decoderName === "OR") {
+                    opSymbol = "|";
+                    resultDec = op1Dec | op2Dec;
+                    formula = `${op1Dec} OR ${op2Dec}`;
+                } else if (decoderName === "AND") {
+                    opSymbol = "&";
+                    resultDec = op1Dec & op2Dec;
+                    formula = `${op1Dec} AND ${op2Dec}`;
+                } else if (decoderName === "XOR") {
+                    opSymbol = "^";
+                    resultDec = op1Dec ^ op2Dec;
+                    formula = `${op1Dec} XOR ${op2Dec}`;
+                } else {
+                    formula = "Opcode non reconnu";
+                    resultDec = 0;
+                }
+            } else if (selectorBits === "10") { // Stockage Mémoire
+                opSymbol = "💾";
+                formula = `Stocker ${op1Dec} ➔ ${decoderName.split(" ")[1] || "Registre"}`;
+                resultDec = op1Dec;
+                flagStr = `[Enregistré dans ${decoderName.split(" ")[1] || "Mémoire"}]`;
+            } else {
+                opSymbol = "⚠️";
+                formula = "Sélectionneur Invalide";
+                resultDec = 0;
+                flagStr = "[ATTENTE D'OPCODE VALIDE]";
+            }
+
+            document.getElementById('processor-op-symbol').textContent = opSymbol;
+            document.getElementById('processor-formula').textContent = formula;
+            document.getElementById('processor-result').textContent = resultDec;
+            
+            let resultBin = resultDec.toString(2).padStart(4, '0');
+            document.getElementById('processor-result-bin').textContent = resultBin;
+            document.getElementById('processor-result-flag').textContent = flagStr;
+
+            // Live schematic text updates
+            if (selectorBits === "01") {
+                document.getElementById('gate-desc-selector').textContent = "Bus ALU activé";
+                document.getElementById('gate-desc-alu').textContent = `Module ${decoderName} stable (${decoderName === 'ADD' ? '5370' : '3380'} ns)`;
+                document.getElementById('gate-desc-reg').textContent = finishBit === 1 ? "Écriture planifiée dans registre" : "Pas d'écriture (Lecture seule)";
+            } else if (selectorBits === "10") {
+                document.getElementById('gate-desc-selector').textContent = "Bus Mémoire activé";
+                document.getElementById('gate-desc-alu').textContent = "ALU Contournée (Bypass)";
+                document.getElementById('gate-desc-reg').textContent = `Écriture directe dans ${decoderName.split(" ")[1] || "Registres"}`;
+            } else {
+                document.getElementById('gate-desc-selector').textContent = "En attente...";
+                document.getElementById('gate-desc-alu').textContent = "Mise en veille";
+                document.getElementById('gate-desc-reg').textContent = "Inactif";
+            }
+        }
+
+
+        // GODOT ENGINE OVERDRIVE EASTER EGG (Special fun request from GDScript 1000% Ilyess!)
+        let overdriveActive = false;
+        let overdriveInterval = null;
+
+        function triggerGodotOverdrive() {
+            overdriveActive = !overdriveActive;
+            const btn = document.getElementById('godot-overdrive-btn');
+            
+            if (overdriveActive) {
+                playClickSound(800, 'sawtooth', 0.2);
+                setTimeout(() => playClickSound(1000, 'sawtooth', 0.2), 100);
+                setTimeout(() => playClickSound(1200, 'sawtooth', 0.3), 200);
+
+                btn.classList.add('bg-cyan-500/10', 'border-cyan-400', 'text-cyan-400', 'glow-pulse');
+                btn.innerHTML = `<span class="inline-block animate-spin">🤖</span><span>GD_BOOST_ON!</span>`;
+                
+                addTerminalLog("Godot Engine GDScript mode set to OVERDRIVE (1000% capability reached)!", "ALERT");
+                
+                const godotLogs = [
+                    "Vector2(INF, INF) logic calculations running...",
+                    "Hyprland workspaces scaling infinitely!",
+                    "Garbage collector completely disabled for performance boost!",
+                    "GDScript compiler running at lightspeed (180kHz RISC-V simulator matched)",
+                    "Rendering Godot nodes directly inside ALU hardware..."
+                ];
+                
+                let i = 0;
+                overdriveInterval = setInterval(() => {
+                    const log = godotLogs[i % godotLogs.length];
+                    addTerminalLog(log, "OK");
+                    i++;
+                    playClickSound(150 + Math.random() * 800, 'sine', 0.03);
+                }, 1200);
+            } else {
+                clearInterval(overdriveInterval);
+                playClickSound(200, 'triangle', 0.25);
+                btn.className = "glass-panel p-2.5 rounded-lg border border-zinc-800 text-zinc-400 hover:text-cyan-400 hover:border-cyan-400/30 transition-all flex items-center gap-2 text-xs font-mono";
+                btn.innerHTML = `<span class="inline-block animate-bounce">🤖</span><span>GD_OVERDRIVE</span>`;
+                addTerminalLog("Godot Overdrive stabilized. Back to nominal GDScript speed.", "WARN");
+            }
+        }
+
+        // Initialize Simulator with Preset on load
+        window.onload = function() {
+            loadPreset('0100010001010011');
+            selectFile('intro');
+            addTerminalLog("System ready. Hyprland workspace initialized on host ilyess@archlinux.", "OK");
+        };
+
+    </script>
+</body>
+</html>
